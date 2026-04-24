@@ -16,7 +16,7 @@ public class Player extends Entity {
 
     public Player(int x, int y, int width, int height) {
         super(x, y, width, height);
-        this.health = 100;
+        this.health = 150;
         this.inventory = new Inventory();
     }
 
@@ -26,16 +26,16 @@ public class Player extends Entity {
         velocityY = 0;
 
         if (movingUp) {
-            velocityY = -3;
+            velocityY = -5;
         }
         if (movingDown) {
-            velocityY = 3;
+            velocityY = 5;
         }
         if (movingLeft) {
-            velocityX = -3;
+            velocityX = -5;
         }
         if (movingRight) {
-            velocityX = 3;
+            velocityX = 5;
         }
 
         move();

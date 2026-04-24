@@ -9,7 +9,7 @@ import java.awt.event.KeyListener;
 
 public class InputHandler implements KeyListener {
 
-    private final Game game;
+        private final Game game;
 
     public InputHandler(Game game) {
         this.game = game;
@@ -31,6 +31,13 @@ public class InputHandler implements KeyListener {
                 game.changeState(GameState.PLAYING);
             }
         }
+        if (e.getKeyCode() == KeyEvent.VK_P) {
+            if (game.getCurrentState() == GameState.PLAYING) {
+                game.changeState(GameState.PAUSED);
+            } else if (game.getCurrentState() == GameState.PAUSED) {
+                game.changeState(GameState.PLAYING);
+            }
+        }
 
         if (game.getCurrentState() != GameState.PLAYING || player == null) {
             return;
@@ -41,7 +48,7 @@ public class InputHandler implements KeyListener {
             case KeyEvent.VK_S -> player.setMovingDown(true);
             case KeyEvent.VK_A -> player.setMovingLeft(true);
             case KeyEvent.VK_D -> player.setMovingRight(true);
-            case KeyEvent.VK_E -> player.interact();
+            case KeyEvent.VK_E -> game.getLevelManager().interactWithNearbyObject();
             default -> {
             }
         }

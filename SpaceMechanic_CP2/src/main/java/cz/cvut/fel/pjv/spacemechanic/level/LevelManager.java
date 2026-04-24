@@ -38,9 +38,12 @@ public class LevelManager {
             objects.add(new SparePart(250, 200, 24, 24, "EnginePart"));
             objects.add(new SparePart(350, 150, 24, 24, "GeneratorPart"));
             objects.add(new ToolItem(300, 250, 24, 24, "Wrench"));
-            objects.add(new Engine(500, 250, 40, 40, "EnginePart"));
+            objects.add(new Engine(700, 350, 40, 40, "EnginePart"));
             objects.add(new Generator(600, 300, 40, 40, "GeneratorPart"));
             objects.add(new DoorSystem(680, 200, 36, 56, "Wrench"));
+            objects.add(new SparePart(400, 100, 24, 24, "GeneratorPart"));
+            objects.add(new SparePart(450, 180, 24, 24, "DoorPart"));
+            objects.add(new DoorSystem(750, 200, 40, 40, "DoorPart"));
         }
     }
 
@@ -62,6 +65,20 @@ public class LevelManager {
         for (GameObject object : objects) {
             if (object.isActive()) {
                 object.render(g);
+            }
+        }
+    }
+
+    public void interactWithNearbyObject() {
+        for (GameObject object : objects) {
+            if (!object.isActive()) {
+                continue;
+            }
+
+            if (player.getBounds().intersects(object.getBounds())) {
+                if (object instanceof RepairableObject repairable) {
+                    repairable.repair(player);
+                }
             }
         }
     }

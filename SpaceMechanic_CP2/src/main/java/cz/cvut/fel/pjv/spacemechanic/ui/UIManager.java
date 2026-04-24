@@ -40,6 +40,7 @@ public class UIManager {
         g.drawString("Health: " + player.getHealth(), 20, 20);
         g.drawString("Items: " + player.getInventory().getItems().size(), 20, 40);
         g.drawString("ESC - pause", 20, 60);
+        g.drawString("Press E to repair", 20, 60);
     }
 
     public void drawPause(Graphics g) {
@@ -53,4 +54,6 @@ public class UIManager {
     public void drawWin(Graphics g) {
         g.drawString("YOU WIN", 360, 220);
     }
+
+
 }

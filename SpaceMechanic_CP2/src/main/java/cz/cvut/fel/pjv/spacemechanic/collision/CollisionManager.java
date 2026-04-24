@@ -26,8 +26,6 @@ public class CollisionManager {
             item.applyEffect(player);
         }
 
-        if (object instanceof RepairableObject repairable) {
-            repairable.repair(player);
-        }
+
     }
 }
