@@ -4,15 +4,15 @@ import java.awt.Graphics;
 
 public abstract class RepairableObject extends GameObject {
 
-    protected String requiredPart;
-    protected boolean repaired;
-    protected int damageLevel;
+    protected String requiredPart; // Part needed to repair this object
+    protected boolean repaired; // True when the object is fully repaired
+    protected int repairProgress; // Current repair progress in percent
 
     public RepairableObject(int x, int y, int width, int height, String requiredPart) {
         super(x, y, width, height);
         this.requiredPart = requiredPart;
         this.repaired = false;
-        this.damageLevel = 100;
+        this.repairProgress = 0;
     }
 
     @Override
@@ -24,17 +24,38 @@ public abstract class RepairableObject extends GameObject {
     public void render(Graphics g) {
         g.drawRect(x, y, width, height);
         g.drawString(getClass().getSimpleName(), x - 5, y - 5);
-    }
 
+        if (repaired) {
+            g.drawString("repaired", x - 5, y + height + 15);
+        } else {
+            g.drawString("repair: " + repairProgress + "%", x - 5, y + height + 15);
+        }
+    }
+    // Do nothing if the object is already repaired
     public void repair(Player player) {
-        if (player.getInventory().containsItem(requiredPart)) {
+        if (repaired) {
+            return;
+        }
+// Player needs the correct part to repair this object
+
+        if (!player.getInventory().containsItem(requiredPart)) {
+            return;
+        }
+// Increase progress step by step
+        repairProgress += 25;
+
+        if (repairProgress >= 100) {
+            repairProgress = 100;
             repaired = true;
-            damageLevel = 0;
         }
     }
 
     public boolean isRepaired() {
         return repaired;
+    }
+
+    public int getRepairProgress() {
+        return repairProgress;
     }
 
     public String getRequiredPart() {

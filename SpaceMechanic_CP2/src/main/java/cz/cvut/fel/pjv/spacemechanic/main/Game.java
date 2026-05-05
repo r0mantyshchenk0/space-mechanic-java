@@ -37,7 +37,7 @@ public class Game {
     public void update() {
         if (currentState == GameState.PLAYING) {
             levelManager.update();
-
+// Player wins when all repairable objects are fixed
             if (levelManager.isLevelCompleted()) {
                 changeState(GameState.WIN);
             }

@@ -48,6 +48,7 @@ public class InputHandler implements KeyListener {
             case KeyEvent.VK_S -> player.setMovingDown(true);
             case KeyEvent.VK_A -> player.setMovingLeft(true);
             case KeyEvent.VK_D -> player.setMovingRight(true);
+            // Try to repair objects when player presses E
             case KeyEvent.VK_E -> game.getLevelManager().interactWithNearbyObject();
             default -> {
             }
