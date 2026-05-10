@@ -22,6 +22,7 @@ public abstract class RepairableObject extends GameObject {
 
     @Override
     public void render(Graphics g) {
+        // Draw object name and current repair status
         g.drawRect(x, y, width, height);
         g.drawString(getClass().getSimpleName(), x - 5, y - 5);
 
@@ -29,6 +30,7 @@ public abstract class RepairableObject extends GameObject {
             g.drawString("repaired", x - 5, y + height + 15);
         } else {
             g.drawString("repair: " + repairProgress + "%", x - 5, y + height + 15);
+            g.drawString("needs: " + requiredPart, x - 5, y + height + 30);
         }
     }
     // Do nothing if the object is already repaired

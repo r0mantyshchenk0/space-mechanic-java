@@ -58,7 +58,7 @@ public class UIManager {
                 if (repairable.isRepaired()) {
                     status = "repaired";
                 } else {
-                    status = repairable.getRepairProgress() + "%";
+                    status = repairable.getRepairProgress() + "%, needs " + repairable.getRequiredPart();
                 }
 
                 g.drawString(name + " - " + status, 20, y);
