@@ -11,8 +11,10 @@ import cz.cvut.fel.pjv.spacemechanic.model.RepairableObject;
 import cz.cvut.fel.pjv.spacemechanic.model.SparePart;
 import cz.cvut.fel.pjv.spacemechanic.model.ToolItem;
 import cz.cvut.fel.pjv.spacemechanic.model.Item;
+import cz.cvut.fel.pjv.spacemechanic.model.ShipTerminal;
 
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.nio.file.Files;
@@ -152,6 +154,11 @@ public class LevelManager {
             return new DoorSystem(x, y, width, height, requiredPart);
         }
 
+        if (type.equals("TERMINAL")) {
+            String hint = parts[5];
+            return new ShipTerminal(x, y, width, height, hint);
+        }
+
         if (type.equals("ELEVATOR")) {
             return new Elevator(x, y, width, height);
         }
@@ -199,25 +206,44 @@ public class LevelManager {
     }
 
     public void interactWithNearbyObject() {
+        // Elevator has the highest priority
         for (GameObject object : objects) {
-            if (!object.isActive()) {
-                continue;
+            if (object.isActive() && object instanceof Elevator && isPlayerNear(object)) {
+                switchLevel();
+                return;
             }
+        }
 
-            if (player.getBounds().intersects(object.getBounds())) {
-                if (object instanceof Elevator) {
-                    switchLevel();
-                    return;
-                }
+        // Terminal has priority over repairable objects
+        for (GameObject object : objects) {
+            if (object.isActive() && object instanceof ShipTerminal terminal && isPlayerNear(object)) {
+                lastMessage = terminal.getHint();
+                return;
+            }
+        }
 
-                if (object instanceof RepairableObject repairable) {
-                    repairObject(repairable, object);
-                    return;
-                }
+        // Repairable objects are handled after elevator and terminal
+        for (GameObject object : objects) {
+            if (object.isActive() && object instanceof RepairableObject repairable && isPlayerNear(object)) {
+                repairObject(repairable, object);
+                return;
             }
         }
 
         lastMessage = "No object nearby.";
+    }
+
+    private boolean isPlayerNear(GameObject object) {
+        Rectangle playerBounds = player.getBounds();
+
+        Rectangle interactionArea = new Rectangle(
+                playerBounds.x - 10,
+                playerBounds.y - 10,
+                playerBounds.width + 20,
+                playerBounds.height + 20
+        );
+
+        return interactionArea.intersects(object.getBounds());
     }
 
     private void switchLevel() {
