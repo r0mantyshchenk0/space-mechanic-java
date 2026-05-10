@@ -2,6 +2,7 @@ package cz.cvut.fel.pjv.spacemechanic.level;
 
 import cz.cvut.fel.pjv.spacemechanic.collision.CollisionManager;
 import cz.cvut.fel.pjv.spacemechanic.model.DoorSystem;
+import cz.cvut.fel.pjv.spacemechanic.model.Elevator;
 import cz.cvut.fel.pjv.spacemechanic.model.Engine;
 import cz.cvut.fel.pjv.spacemechanic.model.GameObject;
 import cz.cvut.fel.pjv.spacemechanic.model.Generator;
@@ -11,23 +12,148 @@ import cz.cvut.fel.pjv.spacemechanic.model.SparePart;
 import cz.cvut.fel.pjv.spacemechanic.model.ToolItem;
 
 import java.awt.Graphics;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Optional;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LevelManager {
 
     private int currentLevel;
+
     private final List<GameObject> objects;
+    private final List<GameObject> levelOneObjects;
+    private final List<GameObject> levelTwoObjects;
+
     private final Player player;
     private final CollisionManager collisionManager;
+    private String lastMessage;
 
     public LevelManager() {
         this.currentLevel = 1;
+
         this.objects = new ArrayList<>();
+        this.levelOneObjects = new ArrayList<>();
+        this.levelTwoObjects = new ArrayList<>();
+
         this.player = new Player(100, 100, 32, 32);
         this.collisionManager = new CollisionManager();
+        this.lastMessage = "Find parts and repair ship systems.";
 
-        loadLevel(currentLevel);
+        createLevels();
+        loadLevel(1);
+    }
+
+    private void createLevels() {
+        levelOneObjects.clear();
+        levelTwoObjects.clear();
+
+        levelOneObjects.addAll(loadObjectsFromFile("levels/level1.txt"));
+        levelTwoObjects.addAll(loadObjectsFromFile("levels/level2.txt"));
+    }
+
+    private List<GameObject> loadObjectsFromFile(String fileName) {
+        List<GameObject> loadedObjects = new ArrayList<>();
+
+        try {
+            BufferedReader reader = openLevelFile(fileName);
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+
+                if (line.isEmpty() || line.startsWith("#")) {
+                    continue;
+                }
+
+                GameObject object = createObjectFromLine(line);
+                loadedObjects.add(object);
+            }
+
+            reader.close();
+        } catch (IOException e) {
+            throw new IllegalStateException("Cannot load level file: " + fileName, e);
+        }
+
+        return loadedObjects;
+    }
+
+    private BufferedReader openLevelFile(String fileName) throws IOException {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileName);
+
+        if (inputStream != null) {
+            return new BufferedReader(new InputStreamReader(inputStream));
+        }
+
+        String[] possiblePaths = {
+                fileName,
+                "SpaceMechanic_CP2/" + fileName,
+                "src/main/resources/" + fileName,
+                "SpaceMechanic_CP2/src/main/resources/" + fileName,
+                "./" + fileName,
+                "./SpaceMechanic_CP2/" + fileName,
+                "./src/main/resources/" + fileName,
+                "./SpaceMechanic_CP2/src/main/resources/" + fileName
+        };
+
+        for (String path : possiblePaths) {
+            File file = new File(path);
+
+            if (file.exists()) {
+                return new BufferedReader(new FileReader(file));
+            }
+        }
+
+        throw new IOException("Level file not found: " + fileName);
+    }
+
+    private GameObject createObjectFromLine(String line) {
+        String[] parts = line.split(",");
+
+        String type = parts[0];
+        int x = Integer.parseInt(parts[1]);
+        int y = Integer.parseInt(parts[2]);
+        int width = Integer.parseInt(parts[3]);
+        int height = Integer.parseInt(parts[4]);
+
+        if (type.equals("SPARE_PART")) {
+            String name = parts[5];
+            return new SparePart(x, y, width, height, name);
+        }
+
+        if (type.equals("TOOL")) {
+            String name = parts[5];
+            return new ToolItem(x, y, width, height, name);
+        }
+
+        if (type.equals("ENGINE")) {
+            String requiredPart = parts[5];
+            return new Engine(x, y, width, height, requiredPart);
+        }
+
+        if (type.equals("GENERATOR")) {
+            String requiredPart = parts[5];
+            return new Generator(x, y, width, height, requiredPart);
+        }
+
+        if (type.equals("DOOR")) {
+            String requiredPart = parts[5];
+            return new DoorSystem(x, y, width, height, requiredPart);
+        }
+
+        if (type.equals("ELEVATOR")) {
+            return new Elevator(x, y, width, height);
+        }
+
+        throw new IllegalArgumentException("Unknown object type: " + type);
     }
 
     public void loadLevel(int level) {
@@ -35,15 +161,15 @@ public class LevelManager {
         currentLevel = level;
 
         if (level == 1) {
-            objects.add(new SparePart(250, 200, 24, 24, "EnginePart"));
-            objects.add(new SparePart(350, 150, 24, 24, "GeneratorPart"));
-            objects.add(new ToolItem(300, 250, 24, 24, "Wrench"));
-            objects.add(new Engine(700, 350, 40, 40, "EnginePart"));
-            objects.add(new Generator(600, 300, 40, 40, "GeneratorPart"));
-            objects.add(new DoorSystem(680, 200, 36, 56, "Wrench"));
-            objects.add(new SparePart(400, 100, 24, 24, "GeneratorPart"));
-            objects.add(new SparePart(450, 180, 24, 24, "DoorPart"));
-            objects.add(new DoorSystem(750, 200, 40, 40, "DoorPart"));
+            objects.addAll(levelOneObjects);
+            player.setX(510);
+            player.setY(260);
+            lastMessage = "Level 1: main deck.";
+        } else if (level == 2) {
+            objects.addAll(levelTwoObjects);
+            player.setX(510);
+            player.setY(260);
+            lastMessage = "Level 2: upper deck.";
         }
     }
 
@@ -76,19 +202,63 @@ public class LevelManager {
             }
 
             if (player.getBounds().intersects(object.getBounds())) {
+                if (object instanceof Elevator) {
+                    switchLevel();
+                    return;
+                }
+
                 if (object instanceof RepairableObject repairable) {
-                    repairable.repair(player);
+                    repairObject(repairable, object);
+                    return;
                 }
             }
+        }
+
+        lastMessage = "No object nearby.";
+    }
+
+    private void switchLevel() {
+        if (currentLevel == 1) {
+            loadLevel(2);
+        } else {
+            loadLevel(1);
+        }
+    }
+
+    private void repairObject(RepairableObject repairable, GameObject object) {
+        String objectName = object.getClass().getSimpleName();
+
+        if (repairable.isRepaired()) {
+            lastMessage = objectName + " is already repaired.";
+            return;
+        }
+
+        if (!player.getInventory().containsItem(repairable.getRequiredPart())) {
+            lastMessage = "Missing part: " + repairable.getRequiredPart();
+            return;
+        }
+
+        repairable.repair(player);
+
+        if (repairable.isRepaired()) {
+            lastMessage = objectName + " repaired.";
+        } else {
+            lastMessage = "Repairing " + objectName + ": "
+                    + repairable.getRepairProgress() + "%";
         }
     }
 
     public boolean isLevelCompleted() {
-        for (GameObject object : objects) {
+        return areObjectsRepaired(levelOneObjects) && areObjectsRepaired(levelTwoObjects);
+    }
+
+    private boolean areObjectsRepaired(List<GameObject> levelObjects) {
+        for (GameObject object : levelObjects) {
             if (object instanceof RepairableObject repairable && !repairable.isRepaired()) {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -102,5 +272,9 @@ public class LevelManager {
 
     public int getCurrentLevel() {
         return currentLevel;
+    }
+
+    public String getLastMessage() {
+        return lastMessage;
     }
 }

@@ -43,10 +43,16 @@ public class Player extends Entity {
 
     @Override
     public void render(Graphics g) {
-        g.drawRect(x, y, width, height);
-        g.drawString("P", x + 10, y + 20);
-    }
+        // Draw player as a small astronaut marker
+        g.setColor(new java.awt.Color(230, 240, 255));
+        g.fillOval(x, y, width, height);
 
+        g.setColor(new java.awt.Color(80, 160, 255));
+        g.drawOval(x, y, width, height);
+
+        g.setColor(java.awt.Color.BLACK);
+        g.drawString("P", x + width / 2 - 4, y + height / 2 + 5);
+    }
     public void interact() {
         // pozdeji interakce s objekty
     }

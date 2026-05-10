@@ -3,8 +3,10 @@ package cz.cvut.fel.pjv.spacemechanic.main;
 import cz.cvut.fel.pjv.spacemechanic.input.InputHandler;
 import cz.cvut.fel.pjv.spacemechanic.level.LevelManager;
 import cz.cvut.fel.pjv.spacemechanic.ui.UIManager;
-
 import javax.swing.JFrame;
+import java.awt.Graphics;
+
+
 
 public class Game {
 
@@ -37,7 +39,8 @@ public class Game {
     public void update() {
         if (currentState == GameState.PLAYING) {
             levelManager.update();
-// Player wins when all repairable objects are fixed
+
+            // Player wins when all repairable objects are fixed
             if (levelManager.isLevelCompleted()) {
                 changeState(GameState.WIN);
             }
@@ -46,6 +49,11 @@ public class Game {
                 changeState(GameState.GAME_OVER);
             }
         }
+    }
+
+    public void render(Graphics g) {
+        levelManager.render(g);
+        uiManager.render(g);
     }
 
     public void changeState(GameState newState) {

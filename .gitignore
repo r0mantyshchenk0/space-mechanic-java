@@ -1,3 +1,20 @@
+# IDE
 .idea/
-out/
 *.iml
+
+# Build output
+out/
+target/
+build/
+
+# Compiled files
+*.class
+
+# Archives
+*.zip
+*.rar
+*.7z
+
+# System files
+.DS_Store
+Thumbs.db

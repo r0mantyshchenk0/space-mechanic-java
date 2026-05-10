@@ -30,24 +30,36 @@ public abstract class RepairableObject extends GameObject {
     public void render(Graphics g) {
         // Draw repairable system with color based on repair state
         if (repaired) {
-            g.setColor(new java.awt.Color(70, 180, 110));
+            g.setColor(new Color(70, 180, 110));
         } else {
-            g.setColor(new java.awt.Color(190, 140, 45));
+            g.setColor(new Color(190, 140, 45));
         }
 
         g.fillRoundRect(x, y, width, height, 8, 8);
 
-        g.setColor(new java.awt.Color(20, 20, 20));
+        g.setColor(new Color(20, 20, 20));
         g.drawRoundRect(x, y, width, height, 8, 8);
 
         // Small inner detail to make objects look less empty
-        g.setColor(new java.awt.Color(40, 45, 55));
+        g.setColor(new Color(40, 45, 55));
         g.drawLine(x + 6, y + 8, x + width - 6, y + 8);
         g.drawLine(x + 6, y + height - 8, x + width - 6, y + height - 8);
 
-        // Draw only object name. Progress and required part are shown in HUD.
-        g.setColor(java.awt.Color.WHITE);
-        g.drawString(getClass().getSimpleName(), x - 5, y - 6);
+        // Draw short object name above the object
+        g.setColor(Color.WHITE);
+        String label = getDisplayName();
+        int labelWidth = g.getFontMetrics().stringWidth(label);
+        g.drawString(label, x + width / 2 - labelWidth / 2, y - 6);
+    }
+
+    private String getDisplayName() {
+        String className = getClass().getSimpleName();
+
+        if (className.equals("DoorSystem")) {
+            return "Door";
+        }
+
+        return className;
     }
 
     public void repair(Player player) {

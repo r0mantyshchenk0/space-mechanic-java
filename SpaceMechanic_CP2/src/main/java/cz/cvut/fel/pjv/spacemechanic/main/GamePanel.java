@@ -48,7 +48,11 @@ public class GamePanel extends JPanel implements Runnable {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        game.getLevelManager().render(g);
-        game.getUiManager().render(g);
+
+        // Draw dark space-like background
+        g.setColor(new java.awt.Color(12, 16, 24));
+        g.fillRect(0, 0, getWidth(), getHeight());
+
+        game.render(g);
     }
 }
