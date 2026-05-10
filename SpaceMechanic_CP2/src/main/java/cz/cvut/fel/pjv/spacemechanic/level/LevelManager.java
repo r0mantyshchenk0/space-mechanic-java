@@ -210,34 +210,57 @@ public class LevelManager {
         int shipWidth = 830;
         int shipHeight = 560;
 
-        // Main ship room
-        g.setColor(new Color(38, 44, 56));
+        // Small stars in the background
+        g.setColor(new Color(70, 80, 110));
+        for (int i = 0; i < 35; i++) {
+            int starX = 390 + (i * 73) % 760;
+            int starY = 35 + (i * 41) % 690;
+            g.fillOval(starX, starY, 2, 2);
+        }
+
+        // Main dark ship interior
+        g.setColor(new Color(32, 38, 50));
         g.fillRoundRect(shipX, shipY, shipWidth, shipHeight, 28, 28);
 
-        // Room border
-        g.setColor(new Color(110, 125, 145));
+        // Outer ship border
+        g.setColor(new Color(115, 135, 160));
         g.drawRoundRect(shipX, shipY, shipWidth, shipHeight, 28, 28);
+
+        // Wall tiles - top and bottom
+        drawTileRow(g, shipX + 25, shipY + 15, shipWidth - 50);
+        drawTileRow(g, shipX + 25, shipY + shipHeight - 45, shipWidth - 50);
+
+        // Wall tiles - left and right
+        drawTileColumn(g, shipX + 18, shipY + 50, shipHeight - 100);
+        drawTileColumn(g, shipX + shipWidth - 48, shipY + 50, shipHeight - 100);
 
         // Floor grid
         g.setColor(new Color(55, 64, 78));
 
-        for (int x = shipX + 30; x < shipX + shipWidth - 20; x += 50) {
-            g.drawLine(x, shipY + 40, x, shipY + shipHeight - 40);
+        for (int x = shipX + 40; x < shipX + shipWidth - 40; x += 50) {
+            g.drawLine(x, shipY + 60, x, shipY + shipHeight - 70);
         }
 
-        for (int y = shipY + 40; y < shipY + shipHeight - 40; y += 50) {
-            g.drawLine(shipX + 20, y, shipX + shipWidth - 20, y);
+        for (int y = shipY + 70; y < shipY + shipHeight - 60; y += 50) {
+            g.drawLine(shipX + 45, y, shipX + shipWidth - 45, y);
         }
 
-        // Decorative wall panels
-        g.setColor(new Color(72, 82, 98));
+        // Large technical wall panels
+        g.setColor(new Color(74, 86, 104));
         g.fillRoundRect(410, 110, 170, 70, 14, 14);
         g.fillRoundRect(980, 110, 170, 70, 14, 14);
         g.fillRoundRect(410, 500, 170, 70, 14, 14);
         g.fillRoundRect(980, 500, 170, 70, 14, 14);
 
+        // Panel highlights
+        g.setColor(new Color(95, 110, 132));
+        g.drawLine(425, 128, 560, 128);
+        g.drawLine(995, 128, 1130, 128);
+        g.drawLine(425, 518, 560, 518);
+        g.drawLine(995, 518, 1130, 518);
+
         // Windows
-        g.setColor(new Color(25, 35, 60));
+        g.setColor(new Color(18, 28, 55));
         g.fillRoundRect(610, 120, 50, 30, 10, 10);
         g.fillRoundRect(690, 120, 50, 30, 10, 10);
 
@@ -245,7 +268,19 @@ public class LevelManager {
         g.drawRoundRect(610, 120, 50, 30, 10, 10);
         g.drawRoundRect(690, 120, 50, 30, 10, 10);
 
-        // Central ship title
+        // Small light strips
+        g.setColor(new Color(80, 140, 210));
+        g.drawLine(615, 154, 655, 154);
+        g.drawLine(695, 154, 735, 154);
+
+        // Decorative pipes
+        g.setColor(new Color(85, 95, 110));
+        g.drawLine(430, 235, 570, 235);
+        g.drawLine(570, 235, 570, 280);
+        g.drawLine(1040, 235, 1120, 235);
+        g.drawLine(1040, 235, 1040, 300);
+
+        // Level title
         g.setColor(Color.WHITE);
 
         if (currentLevel == 1) {
@@ -254,6 +289,38 @@ public class LevelManager {
             g.drawString("UPPER DECK", 735, 110);
         }
     }
+
+
+    private void drawTileRow(Graphics g, int startX, int y, int width) {
+        int tileSize = 32;
+
+        for (int x = startX; x < startX + width; x += tileSize) {
+            g.setColor(new Color(48, 57, 72));
+            g.fillRect(x, y, tileSize, tileSize);
+
+            g.setColor(new Color(70, 82, 100));
+            g.drawRect(x, y, tileSize, tileSize);
+
+            g.setColor(new Color(35, 42, 55));
+            g.drawLine(x + 4, y + tileSize - 5, x + tileSize - 5, y + tileSize - 5);
+        }
+    }
+
+    private void drawTileColumn(Graphics g, int x, int startY, int height) {
+        int tileSize = 32;
+
+        for (int y = startY; y < startY + height; y += tileSize) {
+            g.setColor(new Color(48, 57, 72));
+            g.fillRect(x, y, tileSize, tileSize);
+
+            g.setColor(new Color(70, 82, 100));
+            g.drawRect(x, y, tileSize, tileSize);
+
+            g.setColor(new Color(35, 42, 55));
+            g.drawLine(x + 5, y + 4, x + 5, y + tileSize - 5);
+        }
+    }
+
 
     public void interactWithNearbyObject() {
         // Elevator has the highest priority
