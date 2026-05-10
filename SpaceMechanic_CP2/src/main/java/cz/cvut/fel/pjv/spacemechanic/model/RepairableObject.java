@@ -1,12 +1,18 @@
 package cz.cvut.fel.pjv.spacemechanic.model;
 
+import java.awt.Color;
 import java.awt.Graphics;
 
 public abstract class RepairableObject extends GameObject {
 
-    protected String requiredPart; // Part needed to repair this object
-    protected boolean repaired; // True when the object is fully repaired
-    protected int repairProgress; // Current repair progress in percent
+    // Part needed to repair this object
+    protected String requiredPart;
+
+    // True when the object is fully repaired
+    protected boolean repaired;
+
+    // Current repair progress in percent
+    protected int repairProgress;
 
     public RepairableObject(int x, int y, int width, int height, String requiredPart) {
         super(x, y, width, height);
@@ -17,33 +23,45 @@ public abstract class RepairableObject extends GameObject {
 
     @Override
     public void update() {
-        // zatim bez dalsi logiky
+        // Static repair objects do not need frame-by-frame logic yet
     }
 
     @Override
     public void render(Graphics g) {
-        // Draw object name and current repair status
-        g.drawRect(x, y, width, height);
-        g.drawString(getClass().getSimpleName(), x - 5, y - 5);
-
+        // Draw repairable system with color based on repair state
         if (repaired) {
-            g.drawString("repaired", x - 5, y + height + 15);
+            g.setColor(new java.awt.Color(70, 180, 110));
         } else {
-            g.drawString("repair: " + repairProgress + "%", x - 5, y + height + 15);
-            g.drawString("needs: " + requiredPart, x - 5, y + height + 30);
+            g.setColor(new java.awt.Color(190, 140, 45));
         }
+
+        g.fillRoundRect(x, y, width, height, 8, 8);
+
+        g.setColor(new java.awt.Color(20, 20, 20));
+        g.drawRoundRect(x, y, width, height, 8, 8);
+
+        // Small inner detail to make objects look less empty
+        g.setColor(new java.awt.Color(40, 45, 55));
+        g.drawLine(x + 6, y + 8, x + width - 6, y + 8);
+        g.drawLine(x + 6, y + height - 8, x + width - 6, y + height - 8);
+
+        // Draw only object name. Progress and required part are shown in HUD.
+        g.setColor(java.awt.Color.WHITE);
+        g.drawString(getClass().getSimpleName(), x - 5, y - 6);
     }
-    // Do nothing if the object is already repaired
+
     public void repair(Player player) {
+        // Do nothing if the object is already repaired
         if (repaired) {
             return;
         }
-// Player needs the correct part to repair this object
 
+        // Player needs the correct part to repair this object
         if (!player.getInventory().containsItem(requiredPart)) {
             return;
         }
-// Increase progress step by step
+
+        // Increase progress step by step
         repairProgress += 25;
 
         if (repairProgress >= 100) {
