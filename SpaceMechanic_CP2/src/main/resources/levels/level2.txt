@@ -1,6 +1,6 @@
-SPARE_PART,430,160,24,24,DoorPart
-SPARE_PART,520,260,24,24,GeneratorPart
-DOOR,760,250,40,55,DoorPart
-GENERATOR,650,340,40,40,GeneratorPart
-ELEVATOR,560,250,45,60
-TERMINAL,620,160,36,36,Hint: use the lift to move between ship decks.
+SPARE_PART,460,170,24,24,DoorPart
+SPARE_PART,570,350,24,24,GeneratorPart
+DOOR,970,320,40,55,DoorPart
+GENERATOR,800,430,40,40,GeneratorPart
+ELEVATOR,650,320,45,60
+TERMINAL,760,210,36,36,Hint: use the lift to move between ship decks.

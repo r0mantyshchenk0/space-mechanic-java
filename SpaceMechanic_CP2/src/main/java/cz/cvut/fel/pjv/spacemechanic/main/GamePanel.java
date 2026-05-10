@@ -8,8 +8,8 @@ import java.awt.Graphics;
 
 public class GamePanel extends JPanel implements Runnable {
 
-    private static final int WIDTH = 2560;
-    private static final int HEIGHT = 1440;
+    private static final int WIDTH = 1280;
+    private static final int HEIGHT = 800;
 
     private final Game game;
     private Thread gameThread;

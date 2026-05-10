@@ -6,27 +6,24 @@ import cz.cvut.fel.pjv.spacemechanic.model.Elevator;
 import cz.cvut.fel.pjv.spacemechanic.model.Engine;
 import cz.cvut.fel.pjv.spacemechanic.model.GameObject;
 import cz.cvut.fel.pjv.spacemechanic.model.Generator;
+import cz.cvut.fel.pjv.spacemechanic.model.Item;
 import cz.cvut.fel.pjv.spacemechanic.model.Player;
 import cz.cvut.fel.pjv.spacemechanic.model.RepairableObject;
+import cz.cvut.fel.pjv.spacemechanic.model.ShipTerminal;
 import cz.cvut.fel.pjv.spacemechanic.model.SparePart;
 import cz.cvut.fel.pjv.spacemechanic.model.ToolItem;
-import cz.cvut.fel.pjv.spacemechanic.model.Item;
-import cz.cvut.fel.pjv.spacemechanic.model.ShipTerminal;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Optional;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -196,12 +193,65 @@ public class LevelManager {
     }
 
     public void render(Graphics g) {
+        drawShipBackground(g);
+
         player.render(g);
 
         for (GameObject object : objects) {
             if (object.isActive()) {
                 object.render(g);
             }
+        }
+    }
+
+    private void drawShipBackground(Graphics g) {
+        int shipX = 370;
+        int shipY = 80;
+        int shipWidth = 830;
+        int shipHeight = 560;
+
+        // Main ship room
+        g.setColor(new Color(38, 44, 56));
+        g.fillRoundRect(shipX, shipY, shipWidth, shipHeight, 28, 28);
+
+        // Room border
+        g.setColor(new Color(110, 125, 145));
+        g.drawRoundRect(shipX, shipY, shipWidth, shipHeight, 28, 28);
+
+        // Floor grid
+        g.setColor(new Color(55, 64, 78));
+
+        for (int x = shipX + 30; x < shipX + shipWidth - 20; x += 50) {
+            g.drawLine(x, shipY + 40, x, shipY + shipHeight - 40);
+        }
+
+        for (int y = shipY + 40; y < shipY + shipHeight - 40; y += 50) {
+            g.drawLine(shipX + 20, y, shipX + shipWidth - 20, y);
+        }
+
+        // Decorative wall panels
+        g.setColor(new Color(72, 82, 98));
+        g.fillRoundRect(410, 110, 170, 70, 14, 14);
+        g.fillRoundRect(980, 110, 170, 70, 14, 14);
+        g.fillRoundRect(410, 500, 170, 70, 14, 14);
+        g.fillRoundRect(980, 500, 170, 70, 14, 14);
+
+        // Windows
+        g.setColor(new Color(25, 35, 60));
+        g.fillRoundRect(610, 120, 50, 30, 10, 10);
+        g.fillRoundRect(690, 120, 50, 30, 10, 10);
+
+        g.setColor(new Color(90, 150, 220));
+        g.drawRoundRect(610, 120, 50, 30, 10, 10);
+        g.drawRoundRect(690, 120, 50, 30, 10, 10);
+
+        // Central ship title
+        g.setColor(Color.WHITE);
+
+        if (currentLevel == 1) {
+            g.drawString("MAIN DECK", 740, 110);
+        } else {
+            g.drawString("UPPER DECK", 735, 110);
         }
     }
 
