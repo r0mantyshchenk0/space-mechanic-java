@@ -42,6 +42,7 @@ public class Game {
 
             // Player wins when all repairable objects are fixed
             if (levelManager.isLevelCompleted()) {
+                levelManager.saveInventoryToFile();
                 changeState(GameState.WIN);
             }
 

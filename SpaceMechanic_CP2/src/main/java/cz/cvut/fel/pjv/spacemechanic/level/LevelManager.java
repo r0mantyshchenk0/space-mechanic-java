@@ -10,8 +10,11 @@ import cz.cvut.fel.pjv.spacemechanic.model.Player;
 import cz.cvut.fel.pjv.spacemechanic.model.RepairableObject;
 import cz.cvut.fel.pjv.spacemechanic.model.SparePart;
 import cz.cvut.fel.pjv.spacemechanic.model.ToolItem;
+import cz.cvut.fel.pjv.spacemechanic.model.Item;
 
 import java.awt.Graphics;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -276,5 +279,20 @@ public class LevelManager {
 
     public String getLastMessage() {
         return lastMessage;
+    }
+
+    public void saveInventoryToFile() {
+        String fileName = "inventory_save.txt";
+
+        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
+            for (Item item : player.getInventory().getItems()) {
+                writer.println(item.getName());
+            }
+
+            lastMessage = "Inventory saved to " + fileName;
+        } catch (IOException e) {
+            lastMessage = "Could not save inventory.";
+            System.err.println("Cannot save inventory: " + e.getMessage());
+        }
     }
 }
