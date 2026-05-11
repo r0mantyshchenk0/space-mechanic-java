@@ -1,8 +1,8 @@
-SPARE_PART,430,150,24,24,EnginePart
-SPARE_PART,540,130,24,24,GeneratorPart
-TOOL,460,350,24,24,Wrench
-ENGINE,960,470,40,40,EnginePart
-GENERATOR,790,410,40,40,GeneratorPart
-DOOR,960,260,36,56,Wrench
-ELEVATOR,650,320,45,60
-TERMINAL,760,210,36,36,Hint: collect parts and repair all damaged systems.
+SPARE_PART,455,210,24,24,EnginePart
+SPARE_PART,535,260,24,24,GeneratorPart
+TOOL,475,430,24,24,Wrench
+ENGINE,960,460,40,40,EnginePart
+GENERATOR,840,440,40,40,GeneratorPart
+DOOR,1000,245,36,56,Wrench
+ELEVATOR,745,250,45,60
+TERMINAL,990,190,36,36,Hint: collect parts and repair all damaged systems.

@@ -210,77 +210,33 @@ public class LevelManager {
         int shipWidth = 830;
         int shipHeight = 560;
 
-        // Small stars in the background
-        g.setColor(new Color(70, 80, 110));
-        for (int i = 0; i < 35; i++) {
-            int starX = 390 + (i * 73) % 760;
-            int starY = 35 + (i * 41) % 690;
-            g.fillOval(starX, starY, 2, 2);
-        }
+        drawStars(g);
 
-        // Main dark ship interior
-        g.setColor(new Color(32, 38, 50));
+        // Main ship body
+        g.setColor(new Color(30, 36, 48));
         g.fillRoundRect(shipX, shipY, shipWidth, shipHeight, 28, 28);
 
-        // Outer ship border
         g.setColor(new Color(115, 135, 160));
         g.drawRoundRect(shipX, shipY, shipWidth, shipHeight, 28, 28);
 
-        // Wall tiles - top and bottom
-        drawTileRow(g, shipX + 25, shipY + 15, shipWidth - 50);
-        drawTileRow(g, shipX + 25, shipY + shipHeight - 45, shipWidth - 50);
+        // Inner floor
+        g.setColor(new Color(39, 46, 60));
+        g.fillRect(shipX + 35, shipY + 55, shipWidth - 70, shipHeight - 95);
 
-        // Wall tiles - left and right
-        drawTileColumn(g, shipX + 18, shipY + 50, shipHeight - 100);
-        drawTileColumn(g, shipX + shipWidth - 48, shipY + 50, shipHeight - 100);
+        // Room zones
+        drawRoom(g, 410, 135, 230, 190, "STORAGE");
+        drawRoom(g, 670, 135, 210, 190, "LIFT AREA");
+        drawRoom(g, 910, 135, 230, 190, "CONTROL");
+        drawRoom(g, 410, 355, 330, 190, "REPAIR BAY");
+        drawRoom(g, 780, 355, 360, 190, "ENGINE ROOM");
 
-        // Floor grid
-        g.setColor(new Color(55, 64, 78));
+        // Corridors
+        g.setColor(new Color(58, 68, 84));
+        g.fillRect(640, 220, 30, 35);
+        g.fillRect(880, 220, 30, 35);
+        g.fillRect(740, 420, 40, 35);
 
-        for (int x = shipX + 40; x < shipX + shipWidth - 40; x += 50) {
-            g.drawLine(x, shipY + 60, x, shipY + shipHeight - 70);
-        }
-
-        for (int y = shipY + 70; y < shipY + shipHeight - 60; y += 50) {
-            g.drawLine(shipX + 45, y, shipX + shipWidth - 45, y);
-        }
-
-        // Large technical wall panels
-        g.setColor(new Color(74, 86, 104));
-        g.fillRoundRect(410, 110, 170, 70, 14, 14);
-        g.fillRoundRect(980, 110, 170, 70, 14, 14);
-        g.fillRoundRect(410, 500, 170, 70, 14, 14);
-        g.fillRoundRect(980, 500, 170, 70, 14, 14);
-
-        // Panel highlights
-        g.setColor(new Color(95, 110, 132));
-        g.drawLine(425, 128, 560, 128);
-        g.drawLine(995, 128, 1130, 128);
-        g.drawLine(425, 518, 560, 518);
-        g.drawLine(995, 518, 1130, 518);
-
-        // Windows
-        g.setColor(new Color(18, 28, 55));
-        g.fillRoundRect(610, 120, 50, 30, 10, 10);
-        g.fillRoundRect(690, 120, 50, 30, 10, 10);
-
-        g.setColor(new Color(90, 150, 220));
-        g.drawRoundRect(610, 120, 50, 30, 10, 10);
-        g.drawRoundRect(690, 120, 50, 30, 10, 10);
-
-        // Small light strips
-        g.setColor(new Color(80, 140, 210));
-        g.drawLine(615, 154, 655, 154);
-        g.drawLine(695, 154, 735, 154);
-
-        // Decorative pipes
-        g.setColor(new Color(85, 95, 110));
-        g.drawLine(430, 235, 570, 235);
-        g.drawLine(570, 235, 570, 280);
-        g.drawLine(1040, 235, 1120, 235);
-        g.drawLine(1040, 235, 1040, 300);
-
-        // Level title
+        // Main title
         g.setColor(Color.WHITE);
 
         if (currentLevel == 1) {
@@ -288,6 +244,68 @@ public class LevelManager {
         } else {
             g.drawString("UPPER DECK", 735, 110);
         }
+
+        // Decorative pipes
+        g.setColor(new Color(88, 98, 115));
+        g.drawLine(430, 585, 1120, 585);
+        g.drawLine(430, 595, 1120, 595);
+
+        // Blue energy line
+        g.setColor(new Color(80, 150, 230));
+        g.drawLine(460, 590, 570, 590);
+        g.drawLine(690, 590, 830, 590);
+        g.drawLine(950, 590, 1080, 590);
+    }
+
+
+    private void drawStars(Graphics g) {
+        g.setColor(new Color(75, 85, 115));
+
+        for (int i = 0; i < 45; i++) {
+            int starX = 385 + (i * 79) % 790;
+            int starY = 25 + (i * 43) % 680;
+
+            if (starX < 350 || starX > 1220 || starY > 700) {
+                continue;
+            }
+
+            g.fillOval(starX, starY, 2, 2);
+        }
+    }
+
+    private void drawRoom(Graphics g, int x, int y, int width, int height, String name) {
+        // Room floor
+        g.setColor(new Color(47, 56, 72));
+        g.fillRoundRect(x, y, width, height, 16, 16);
+
+        // Room border
+        g.setColor(new Color(90, 105, 128));
+        g.drawRoundRect(x, y, width, height, 16, 16);
+
+        // Top label bar
+        g.setColor(new Color(34, 42, 56));
+        g.fillRoundRect(x + 8, y + 8, width - 16, 24, 10, 10);
+
+        g.setColor(new Color(150, 170, 195));
+        g.drawString(name, x + 16, y + 25);
+
+        // Tile-like floor details
+        g.setColor(new Color(60, 70, 88));
+
+        for (int tileX = x + 15; tileX < x + width - 15; tileX += 40) {
+            g.drawLine(tileX, y + 45, tileX, y + height - 15);
+        }
+
+        for (int tileY = y + 50; tileY < y + height - 15; tileY += 40) {
+            g.drawLine(x + 15, tileY, x + width - 15, tileY);
+        }
+
+        // Small corner bolts
+        g.setColor(new Color(120, 135, 155));
+        g.fillOval(x + 10, y + 10, 4, 4);
+        g.fillOval(x + width - 15, y + 10, 4, 4);
+        g.fillOval(x + 10, y + height - 15, 4, 4);
+        g.fillOval(x + width - 15, y + height - 15, 4, 4);
     }
 
 
