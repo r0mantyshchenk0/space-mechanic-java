@@ -23,6 +23,9 @@ public class InputHandler implements KeyListener {
             game.changeState(GameState.PLAYING);
             return;
         }
+        if (e.getKeyCode() == KeyEvent.VK_C) {
+            game.getLevelManager().craftCurrentLevelRecipe();
+        }
 
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             if (game.getCurrentState() == GameState.PLAYING) {
@@ -50,6 +53,7 @@ public class InputHandler implements KeyListener {
             case KeyEvent.VK_D -> player.setMovingRight(true);
             // Try to repair objects when player presses E
             case KeyEvent.VK_E -> game.getLevelManager().interactWithNearbyObject();
+            case KeyEvent.VK_C -> game.getLevelManager().craftCurrentLevelRecipe();
             default -> {
             }
         }
@@ -62,6 +66,8 @@ public class InputHandler implements KeyListener {
         if (player == null) {
             return;
         }
+
+
 
         switch (e.getKeyCode()) {
             case KeyEvent.VK_W -> player.setMovingUp(false);
@@ -77,4 +83,6 @@ public class InputHandler implements KeyListener {
     public void keyTyped(KeyEvent e) {
         // nic
     }
+
+
 }

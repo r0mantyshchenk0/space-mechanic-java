@@ -19,6 +19,15 @@ public class Inventory {
         items.remove(item);
     }
 
+    public void removeItem(String itemName) {
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).getName().equals(itemName)) {
+                items.remove(i);
+                return;
+            }
+        }
+    }
+
     public boolean containsItem(String itemName) {
         for (Item item : items) {
             if (item.getName().equals(itemName)) {

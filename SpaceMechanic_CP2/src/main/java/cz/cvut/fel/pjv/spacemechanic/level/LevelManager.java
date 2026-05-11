@@ -1,6 +1,8 @@
 package cz.cvut.fel.pjv.spacemechanic.level;
 
 import cz.cvut.fel.pjv.spacemechanic.collision.CollisionManager;
+import cz.cvut.fel.pjv.spacemechanic.model.LockedDoor;
+import cz.cvut.fel.pjv.spacemechanic.model.Wall;
 import cz.cvut.fel.pjv.spacemechanic.model.DoorSystem;
 import cz.cvut.fel.pjv.spacemechanic.model.Elevator;
 import cz.cvut.fel.pjv.spacemechanic.model.Engine;
@@ -159,7 +161,14 @@ public class LevelManager {
         if (type.equals("ELEVATOR")) {
             return new Elevator(x, y, width, height);
         }
+        if (type.equals("WALL")) {
+            return new Wall(x, y, width, height);
+        }
 
+        if (type.equals("LOCKED_DOOR")) {
+            String requiredModule = parts[5];
+            return new LockedDoor(x, y, width, height, requiredModule);
+        }
         throw new IllegalArgumentException("Unknown object type: " + type);
     }
 
@@ -169,18 +178,21 @@ public class LevelManager {
 
         if (level == 1) {
             objects.addAll(levelOneObjects);
-            player.setX(510);
-            player.setY(260);
-            lastMessage = "Level 1: main deck.";
+            player.setX(500);
+            player.setY(220);
+            lastMessage = "Level 1: Engineering Deck.";
         } else if (level == 2) {
             objects.addAll(levelTwoObjects);
-            player.setX(510);
-            player.setY(260);
-            lastMessage = "Level 2: upper deck.";
+            player.setX(500);
+            player.setY(420);
+            lastMessage = "Level 2: Control Deck.";
         }
     }
 
     public void update() {
+        int oldX = player.getBounds().x;
+        int oldY = player.getBounds().y;
+
         player.update();
 
         for (GameObject object : objects) {
@@ -189,7 +201,32 @@ public class LevelManager {
             }
         }
 
+        // Solid objects block player movement
+        if (isPlayerBlocked()) {
+            player.setX(oldX);
+            player.setY(oldY);
+        }
+
         collisionManager.checkCollisions(player, objects);
+    }
+
+    private boolean isPlayerBlocked() {
+        for (GameObject object : objects) {
+            if (!object.isActive()) {
+                continue;
+            }
+
+            if (isSolidObject(object) && player.getBounds().intersects(object.getBounds())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    private boolean isSolidObject(GameObject object) {
+        return object instanceof Wall || object instanceof LockedDoor;
     }
 
     public void render(Graphics g) {
@@ -213,36 +250,60 @@ public class LevelManager {
         drawStars(g);
 
         // Main ship body
-        g.setColor(new Color(30, 36, 48));
+        if (currentLevel == 1) {
+            g.setColor(new Color(30, 36, 48));
+        } else {
+            g.setColor(new Color(28, 32, 46));
+        }
+
         g.fillRoundRect(shipX, shipY, shipWidth, shipHeight, 28, 28);
 
         g.setColor(new Color(115, 135, 160));
         g.drawRoundRect(shipX, shipY, shipWidth, shipHeight, 28, 28);
 
         // Inner floor
-        g.setColor(new Color(39, 46, 60));
+        if (currentLevel == 1) {
+            g.setColor(new Color(39, 46, 60));
+        } else {
+            g.setColor(new Color(36, 42, 62));
+        }
+
         g.fillRect(shipX + 35, shipY + 55, shipWidth - 70, shipHeight - 95);
 
-        // Room zones
-        drawRoom(g, 410, 135, 230, 190, "STORAGE");
-        drawRoom(g, 670, 135, 210, 190, "LIFT AREA");
-        drawRoom(g, 910, 135, 230, 190, "CONTROL");
-        drawRoom(g, 410, 355, 330, 190, "REPAIR BAY");
-        drawRoom(g, 780, 355, 360, 190, "ENGINE ROOM");
+        if (currentLevel == 1) {
+            drawRoom(g, 410, 135, 230, 190, "STORAGE");
+            drawRoom(g, 670, 135, 210, 190, "LIFT AREA");
+            drawRoom(g, 910, 135, 230, 190, "POWER PANEL");
+            drawRoom(g, 410, 355, 330, 190, "REPAIR BAY");
+            drawRoom(g, 780, 355, 360, 190, "ENGINE ROOM");
+        } else {
+            drawRoom(g, 410, 135, 260, 190, "CONTROL ROOM");
+            drawRoom(g, 700, 135, 180, 190, "LIFT CORE");
+            drawRoom(g, 910, 135, 230, 190, "DATA STORAGE");
+            drawRoom(g, 410, 355, 260, 190, "FUEL STORAGE");
+            drawRoom(g, 700, 355, 440, 190, "MAIN ENGINE");
+        }
 
         // Corridors
         g.setColor(new Color(58, 68, 84));
-        g.fillRect(640, 220, 30, 35);
-        g.fillRect(880, 220, 30, 35);
-        g.fillRect(740, 420, 40, 35);
+
+        if (currentLevel == 1) {
+            g.fillRect(640, 220, 30, 35);
+            g.fillRect(880, 220, 30, 35);
+            g.fillRect(740, 420, 40, 35);
+        } else {
+            g.fillRect(670, 220, 30, 35);
+            g.fillRect(880, 220, 30, 35);
+            g.fillRect(670, 420, 30, 35);
+        }
 
         // Main title
         g.setColor(Color.WHITE);
 
         if (currentLevel == 1) {
-            g.drawString("MAIN DECK", 740, 110);
+            g.drawString("ENGINEERING DECK", 720, 110);
         } else {
-            g.drawString("UPPER DECK", 735, 110);
+            g.drawString("CONTROL DECK", 735, 110);
         }
 
         // Decorative pipes
@@ -250,8 +311,13 @@ public class LevelManager {
         g.drawLine(430, 585, 1120, 585);
         g.drawLine(430, 595, 1120, 595);
 
-        // Blue energy line
-        g.setColor(new Color(80, 150, 230));
+        // Energy line color differs by level
+        if (currentLevel == 1) {
+            g.setColor(new Color(80, 150, 230));
+        } else {
+            g.setColor(new Color(160, 110, 230));
+        }
+
         g.drawLine(460, 590, 570, 590);
         g.drawLine(690, 590, 830, 590);
         g.drawLine(950, 590, 1080, 590);
@@ -339,7 +405,6 @@ public class LevelManager {
         }
     }
 
-
     public void interactWithNearbyObject() {
         // Elevator has the highest priority
         for (GameObject object : objects) {
@@ -357,7 +422,15 @@ public class LevelManager {
             }
         }
 
-        // Repairable objects are handled after elevator and terminal
+        // Locked doors are handled before normal repair objects
+        for (GameObject object : objects) {
+            if (object.isActive() && object instanceof LockedDoor door && isPlayerNear(object)) {
+                unlockDoor(door);
+                return;
+            }
+        }
+
+        // Repairable objects are handled after elevator, terminal and locked doors
         for (GameObject object : objects) {
             if (object.isActive() && object instanceof RepairableObject repairable && isPlayerNear(object)) {
                 repairObject(repairable, object);
@@ -366,6 +439,16 @@ public class LevelManager {
         }
 
         lastMessage = "No object nearby.";
+    }
+
+    private void unlockDoor(LockedDoor door) {
+        if (!player.getInventory().containsItem(door.getRequiredModule())) {
+            lastMessage = "Required module missing: " + door.getRequiredModule();
+            return;
+        }
+
+        door.setActive(false);
+        lastMessage = door.getRequiredModule() + " used. Door unlocked.";
     }
 
     private boolean isPlayerNear(GameObject object) {
@@ -455,5 +538,34 @@ public class LevelManager {
             lastMessage = "Could not save inventory.";
             System.err.println("Cannot save inventory: " + e.getMessage());
         }
+    }
+
+    public void craftCurrentLevelRecipe() {
+        if (currentLevel == 1) {
+            craftItem("Wire", "Battery", "Power Module");
+        } else if (currentLevel == 2) {
+            craftItem("Metal Plate", "Fuel Cell", "Engine Core");
+        }
+    }
+
+    private void craftItem(String firstItem, String secondItem, String resultItem) {
+        boolean hasFirstItem = player.getInventory().containsItem(firstItem);
+        boolean hasSecondItem = player.getInventory().containsItem(secondItem);
+
+        if (!hasFirstItem || !hasSecondItem) {
+            lastMessage = "Missing parts for crafting: " + firstItem + " + " + secondItem;
+            return;
+        }
+
+        if (player.getInventory().containsItem(resultItem)) {
+            lastMessage = resultItem + " is already crafted.";
+            return;
+        }
+
+        player.getInventory().removeItem(firstItem);
+        player.getInventory().removeItem(secondItem);
+        player.getInventory().addItem(new SparePart(0, 0, 0, 0, resultItem));
+
+        lastMessage = "Crafted: " + resultItem;
     }
 }
