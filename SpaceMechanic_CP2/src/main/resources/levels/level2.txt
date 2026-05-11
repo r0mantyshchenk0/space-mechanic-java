@@ -1,6 +1,25 @@
-SPARE_PART,460,210,24,24,DoorPart
-SPARE_PART,535,430,24,24,GeneratorPart
-DOOR,1000,270,40,55,DoorPart
-GENERATOR,850,460,40,40,GeneratorPart
+SPARE_PART,940,215,24,24,Metal Plate
+SPARE_PART,470,440,24,24,Fuel Cell
+
+# Outer ship barriers
+WALL,370,80,830,20
+WALL,370,620,830,20
+WALL,370,80,20,560
+WALL,1180,80,20,560
+
+# Different internal barriers for Control Deck
+WALL,670,135,20,85
+WALL,880,250,20,75
+
+# Closed Main Engine room
+WALL,700,355,440,20
+WALL,700,525,440,20
+WALL,1120,355,20,190
+WALL,700,355,20,65
+WALL,700,495,20,50
+
+LOCKED_DOOR,685,425,40,70,Engine Core
+
+GENERATOR,870,450,40,40,Engine Core
 ELEVATOR,745,250,45,60
-TERMINAL,990,190,36,36,Hint: use the lift to move between ship decks.
+TERMINAL,500,190,36,36,Hint: craft Engine Core from Metal Plate and Fuel Cell.
