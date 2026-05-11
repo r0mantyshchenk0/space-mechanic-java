@@ -40,6 +40,8 @@ public class LevelManager {
     private final Player player;
     private final CollisionManager collisionManager;
     private String lastMessage;
+    private boolean levelOneObjectiveCompleted;
+    private boolean levelTwoObjectiveCompleted;
 
     public LevelManager() {
         this.currentLevel = 1;
@@ -51,6 +53,8 @@ public class LevelManager {
         this.player = new Player(100, 100, 32, 32);
         this.collisionManager = new CollisionManager();
         this.lastMessage = "Find parts and repair ship systems.";
+        this.levelOneObjectiveCompleted = false;
+        this.levelTwoObjectiveCompleted = false;
 
         createLevels();
         loadLevel(1);
@@ -448,6 +452,19 @@ public class LevelManager {
         }
 
         door.setActive(false);
+
+        if (currentLevel == 1 && door.getRequiredModule().equals("Power Module")) {
+            levelOneObjectiveCompleted = true;
+            lastMessage = "Power Module used. Elevator activated.";
+            return;
+        }
+
+        if (currentLevel == 2 && door.getRequiredModule().equals("Engine Core")) {
+            levelTwoObjectiveCompleted = true;
+            lastMessage = "Engine Core installed. Station repaired.";
+            return;
+        }
+
         lastMessage = door.getRequiredModule() + " used. Door unlocked.";
     }
 
@@ -465,10 +482,15 @@ public class LevelManager {
     }
 
     private void switchLevel() {
+        if (currentLevel == 1 && !levelOneObjectiveCompleted) {
+            lastMessage = "Elevator locked. Complete Engineering Deck objective first.";
+            return;
+        }
+
         if (currentLevel == 1) {
             loadLevel(2);
         } else {
-            loadLevel(1);
+            lastMessage = "All objectives completed. Finish the station repair.";
         }
     }
 
@@ -496,7 +518,7 @@ public class LevelManager {
     }
 
     public boolean isLevelCompleted() {
-        return areObjectsRepaired(levelOneObjects) && areObjectsRepaired(levelTwoObjects);
+        return levelOneObjectiveCompleted && levelTwoObjectiveCompleted;
     }
 
     private boolean areObjectsRepaired(List<GameObject> levelObjects) {
