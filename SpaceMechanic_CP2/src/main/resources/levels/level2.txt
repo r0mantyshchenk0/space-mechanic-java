@@ -1,5 +1,5 @@
-SPARE_PART,940,215,24,24,Metal Plate
-SPARE_PART,470,440,24,24,Fuel Cell
+CHEST,940,215,34,24,Metal Plate
+CHEST,470,440,34,24,Fuel Cell
 
 # Outer ship barriers
 WALL,370,80,830,20

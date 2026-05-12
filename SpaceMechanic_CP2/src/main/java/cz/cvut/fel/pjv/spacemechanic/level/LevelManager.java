@@ -14,6 +14,7 @@ import cz.cvut.fel.pjv.spacemechanic.model.RepairableObject;
 import cz.cvut.fel.pjv.spacemechanic.model.ShipTerminal;
 import cz.cvut.fel.pjv.spacemechanic.model.SparePart;
 import cz.cvut.fel.pjv.spacemechanic.model.ToolItem;
+import cz.cvut.fel.pjv.spacemechanic.model.Chest;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -172,6 +173,10 @@ public class LevelManager {
         if (type.equals("LOCKED_DOOR")) {
             String requiredModule = parts[5];
             return new LockedDoor(x, y, width, height, requiredModule);
+        }
+        if (type.equals("CHEST")) {
+            String itemName = parts[5];
+            return new Chest(x, y, width, height, itemName);
         }
         throw new IllegalArgumentException("Unknown object type: " + type);
     }
@@ -434,6 +439,13 @@ public class LevelManager {
             }
         }
 
+        for (GameObject object : objects) {
+            if (object.isActive() && object instanceof Chest chest && isPlayerNear(object)) {
+                openChest(chest);
+                return;
+            }
+        }
+
         // Repairable objects are handled after elevator, terminal and locked doors
         for (GameObject object : objects) {
             if (object.isActive() && object instanceof RepairableObject repairable && isPlayerNear(object)) {
@@ -589,5 +601,25 @@ public class LevelManager {
         player.getInventory().addItem(new SparePart(0, 0, 0, 0, resultItem));
 
         lastMessage = "Crafted: " + resultItem;
+    }
+    private void openChest(Chest chest) {
+        if (chest.isOpened()) {
+            lastMessage = "Chest is empty.";
+            return;
+        }
+
+        Item item = createInventoryItemForChest(chest.getItemName());
+        player.getInventory().addItem(item);
+        chest.open();
+
+        lastMessage = chest.getItemName() + " collected from chest.";
+    }
+
+    private Item createInventoryItemForChest(String itemName) {
+        if (itemName.equals("Wrench")) {
+            return new ToolItem(0, 0, 0, 0, itemName);
+        }
+
+        return new SparePart(0, 0, 0, 0, itemName);
     }
 }
