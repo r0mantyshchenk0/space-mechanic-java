@@ -30,6 +30,9 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Spravuje levely, objekty, hrace a hlavni herni logiku.
+ */
 public class LevelManager {
 
     private int currentLevel;
@@ -45,6 +48,9 @@ public class LevelManager {
     private boolean levelOneObjectiveCompleted;
     private boolean levelTwoObjectiveCompleted;
 
+    /**
+     * Vytvori zakladni stav hry a nacte prvni level.
+     */
     public LevelManager() {
         this.currentLevel = 1;
 
@@ -63,6 +69,9 @@ public class LevelManager {
         loadLevel(1);
     }
 
+    /**
+     * Nacte objekty pro oba levely ze souboru.
+     */
     private void createLevels() {
         levelOneObjects.clear();
         levelTwoObjects.clear();
@@ -71,6 +80,9 @@ public class LevelManager {
         levelTwoObjects.addAll(loadObjectsFromFile("levels/level2.txt"));
     }
 
+    /**
+     * Nacte seznam objektu z textoveho souboru levelu.
+     */
     private List<GameObject> loadObjectsFromFile(String fileName) {
         List<GameObject> loadedObjects = new ArrayList<>();
 
@@ -81,6 +93,7 @@ public class LevelManager {
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
 
+                // Prazdne radky a komentare v souboru se preskakuji
                 if (line.isEmpty() || line.startsWith("#")) {
                     continue;
                 }
@@ -97,6 +110,9 @@ public class LevelManager {
         return loadedObjects;
     }
 
+    /**
+     * Najde a otevre soubor levelu.
+     */
     private BufferedReader openLevelFile(String fileName) throws IOException {
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileName);
 
@@ -104,6 +120,7 @@ public class LevelManager {
             return new BufferedReader(new InputStreamReader(inputStream));
         }
 
+        // Pomocne cesty pro spousteni z ruznych adresaru
         String[] possiblePaths = {
                 fileName,
                 "SpaceMechanic_CP2/" + fileName,
@@ -126,6 +143,9 @@ public class LevelManager {
         throw new IOException("Level file not found: " + fileName);
     }
 
+    /**
+     * Vytvori herni objekt podle jednoho radku v level souboru.
+     */
     private GameObject createObjectFromLine(String line) {
         String[] parts = line.split(",");
 
@@ -186,6 +206,9 @@ public class LevelManager {
         throw new IllegalArgumentException("Unknown object type: " + type);
     }
 
+    /**
+     * Nastavi aktivni level a vychozi pozici hrace.
+     */
     public void loadLevel(int level) {
         objects.clear();
         currentLevel = level;
@@ -203,6 +226,9 @@ public class LevelManager {
         }
     }
 
+    /**
+     * Aktualizuje hrace, objekty a resi kolize.
+     */
     public void update() {
         int oldX = player.getBounds().x;
         int oldY = player.getBounds().y;
@@ -215,6 +241,7 @@ public class LevelManager {
             }
         }
 
+        // Pri narazu do pevneho objektu se hrac vrati zpet
         if (isPlayerBlocked()) {
             player.setX(oldX);
             player.setY(oldY);
@@ -223,6 +250,9 @@ public class LevelManager {
         collisionManager.checkCollisions(player, objects);
     }
 
+    /**
+     * Kontroluje, jestli hrac narazil do pevneho objektu.
+     */
     private boolean isPlayerBlocked() {
         for (GameObject object : objects) {
             if (!object.isActive()) {
@@ -237,10 +267,16 @@ public class LevelManager {
         return false;
     }
 
+    /**
+     * Urcuje objekty, ktere blokuji pohyb.
+     */
     private boolean isSolidObject(GameObject object) {
         return object instanceof Wall || object instanceof LockedDoor;
     }
 
+    /**
+     * Vykresli pozadi, hrace a aktivni objekty.
+     */
     public void render(Graphics g) {
         drawShipBackground(g);
 
@@ -253,6 +289,9 @@ public class LevelManager {
         }
     }
 
+    /**
+     * Vykresli hlavni pozadi lodi.
+     */
     private void drawShipBackground(Graphics g) {
         int shipX = 370;
         int shipY = 80;
@@ -312,6 +351,9 @@ public class LevelManager {
         }
     }
 
+    /**
+     * Vykresli vesmirne pozadi.
+     */
     private void drawSpaceBackground(Graphics g) {
         g.setColor(new Color(7, 11, 20));
         g.fillRect(350, 20, 900, 720);
@@ -340,6 +382,9 @@ public class LevelManager {
         g.drawLine(940, 680, 1180, 620);
     }
 
+    /**
+     * Vykresli pruchody mezi mistnostmi.
+     */
     private void drawCorridors(Graphics g) {
         g.setColor(new Color(58, 68, 84));
 
@@ -366,6 +411,9 @@ public class LevelManager {
         }
     }
 
+    /**
+     * Vykresli dekorace lodi.
+     */
     private void drawShipDecorations(Graphics g) {
         g.setColor(new Color(88, 98, 115));
         g.drawLine(430, 585, 1120, 585);
@@ -388,6 +436,9 @@ public class LevelManager {
         }
     }
 
+    /**
+     * Vykresli detaily mistnosti podle aktualniho levelu.
+     */
     private void drawRoomDetails(Graphics g) {
         if (currentLevel == 1) {
             drawToolBench(g, 470, 465);
@@ -523,6 +574,9 @@ public class LevelManager {
         g.fillOval(x + width - 15, y + height - 15, 4, 4);
     }
 
+    /**
+     * Zpracuje interakci hrace s nejblizsim objektem.
+     */
     public void interactWithNearbyObject() {
         for (GameObject object : objects) {
             if (object.isActive() && object instanceof Elevator && isPlayerNear(object)) {
@@ -564,6 +618,9 @@ public class LevelManager {
         lastMessage = "No object nearby.";
     }
 
+    /**
+     * Pokusi se odemknout dvere pomoci predmetu z inventare.
+     */
     private void unlockDoor(LockedDoor door) {
         if (!player.getInventory().containsItem(door.getRequiredModule())) {
             lastMessage = "Required module missing: " + door.getRequiredModule();
@@ -586,6 +643,9 @@ public class LevelManager {
         lastMessage = door.getRequiredModule() + " used. Door unlocked.";
     }
 
+    /**
+     * Kontroluje, jestli je hrac dost blizko k objektu.
+     */
     private boolean isPlayerNear(GameObject object) {
         Rectangle playerBounds = player.getBounds();
 
@@ -599,6 +659,9 @@ public class LevelManager {
         return interactionArea.intersects(object.getBounds());
     }
 
+    /**
+     * Prepne hrace mezi levely.
+     */
     private void switchLevel() {
         if (currentLevel == 1 && !levelOneObjectiveCompleted) {
             lastMessage = "Elevator locked. Complete Engineering Deck objective first.";
@@ -612,6 +675,9 @@ public class LevelManager {
         }
     }
 
+    /**
+     * Opravi objekt, pokud ma hrac potrebnou soucastku.
+     */
     private void repairObject(RepairableObject repairable, GameObject object) {
         String objectName = object.getClass().getSimpleName();
 
@@ -661,6 +727,9 @@ public class LevelManager {
         return lastMessage;
     }
 
+    /**
+     * Ulozi inventar hrace do textoveho souboru.
+     */
     public void saveInventoryToFile() {
         String fileName = "inventory_save.txt";
 
@@ -676,6 +745,9 @@ public class LevelManager {
         }
     }
 
+    /**
+     * Spusti crafting podle aktualniho levelu.
+     */
     public void craftCurrentLevelRecipe() {
         if (currentLevel == 1) {
             craftItem("Wire", "Battery", "Power Module");
@@ -684,6 +756,9 @@ public class LevelManager {
         }
     }
 
+    /**
+     * Vytvori novy predmet ze dvou casti v inventari.
+     */
     private void craftItem(String firstItem, String secondItem, String resultItem) {
         boolean hasFirstItem = player.getInventory().containsItem(firstItem);
         boolean hasSecondItem = player.getInventory().containsItem(secondItem);
@@ -705,6 +780,9 @@ public class LevelManager {
         lastMessage = "Crafted: " + resultItem;
     }
 
+    /**
+     * Otevre bednu a prida predmet do inventare.
+     */
     private void openChest(Chest chest) {
         if (chest.isOpened()) {
             lastMessage = "Chest is empty.";
@@ -724,6 +802,9 @@ public class LevelManager {
         lastMessage = chest.getItemName() + " collected from chest.";
     }
 
+    /**
+     * Vytvori typ predmetu podle nazvu z bedny.
+     */
     private Item createInventoryItemForChest(String itemName) {
         if (itemName.equals("Wrench")) {
             return new ToolItem(0, 0, 0, 0, itemName);
