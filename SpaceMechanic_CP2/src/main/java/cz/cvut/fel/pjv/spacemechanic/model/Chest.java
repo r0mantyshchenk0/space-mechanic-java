@@ -22,37 +22,35 @@ public class Chest extends GameObject {
     @Override
     public void render(Graphics g) {
         if (opened) {
-            // Open chest
-            g.setColor(new Color(130, 95, 55));
+            // Open base
+            g.setColor(new Color(120, 85, 45));
             g.fillRoundRect(x, y + 8, width, height - 8, 6, 6);
 
-            g.setColor(new Color(170, 125, 75));
-            g.fillRoundRect(x, y, width, 10, 6, 6);
+            // Open lid
+            g.setColor(new Color(165, 120, 65));
+            g.fillRoundRect(x + 1, y, width - 2, 10, 6, 6);
 
-            g.setColor(new Color(80, 55, 30));
+            g.setColor(new Color(75, 50, 28));
             g.drawRoundRect(x, y + 8, width, height - 8, 6, 6);
-            g.drawRoundRect(x, y, width, 10, 6, 6);
+            g.drawRoundRect(x + 1, y, width - 2, 10, 6, 6);
         } else {
-            // Closed chest
-            g.setColor(new Color(140, 100, 55));
+            // Chest body
+            g.setColor(new Color(130, 92, 48));
             g.fillRoundRect(x, y, width, height, 6, 6);
 
+            // Lid
             g.setColor(new Color(185, 135, 75));
             g.fillRoundRect(x, y, width, height / 2, 6, 6);
 
-            g.setColor(new Color(80, 55, 30));
+            // Border
+            g.setColor(new Color(75, 50, 28));
             g.drawRoundRect(x, y, width, height, 6, 6);
 
             // Lock
             g.setColor(new Color(220, 190, 90));
-            g.fillRect(x + width / 2 - 4, y + height / 2 - 3, 8, 8);
+            g.fillRect(x + width / 2 - 4, y + height / 2 - 2, 8, 8);
             g.drawArc(x + width / 2 - 4, y + height / 2 - 8, 8, 8, 0, 180);
         }
-
-        g.setColor(Color.WHITE);
-        String label = "Chest";
-        int labelWidth = g.getFontMetrics().stringWidth(label);
-        g.drawString(label, x + width / 2 - labelWidth / 2, y - 6);
     }
 
     public String getItemName() {
