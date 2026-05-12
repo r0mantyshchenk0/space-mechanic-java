@@ -390,13 +390,8 @@ public class LevelManager {
 
     private void drawRoomDetails(Graphics g) {
         if (currentLevel == 1) {
-            drawStorageCrates(g, 445, 245);
-            drawStorageCrates(g, 510, 210);
-
             drawToolBench(g, 470, 465);
-
             drawControlScreens(g, 970, 220);
-
             drawEnginePipes(g, 850, 430);
             drawEngineCoreBase(g, 980, 455);
         } else {
@@ -411,18 +406,6 @@ public class LevelManager {
             drawEnginePipes(g, 790, 430);
             drawEngineCoreBase(g, 920, 445);
         }
-    }
-
-    private void drawStorageCrates(Graphics g, int x, int y) {
-        g.setColor(new Color(115, 80, 45));
-        g.fillRoundRect(x, y, 42, 28, 6, 6);
-
-        g.setColor(new Color(170, 120, 65));
-        g.drawRoundRect(x, y, 42, 28, 6, 6);
-        g.drawLine(x + 5, y + 10, x + 37, y + 10);
-
-        g.setColor(new Color(220, 180, 90));
-        g.fillRect(x + 18, y + 11, 7, 7);
     }
 
     private void drawToolBench(Graphics g, int x, int y) {
@@ -563,7 +546,9 @@ public class LevelManager {
         }
 
         for (GameObject object : objects) {
-            if (object.isActive() && object instanceof Chest chest && isPlayerNear(object)) {
+            if (object.isActive() && object instanceof Chest chest
+                    && !chest.isOpened()
+                    && isPlayerNear(object)) {
                 openChest(chest);
                 return;
             }
@@ -594,8 +579,7 @@ public class LevelManager {
         }
 
         if (currentLevel == 2 && door.getRequiredModule().equals("Engine Core")) {
-            levelTwoObjectiveCompleted = true;
-            lastMessage = "Engine Core installed. Station repaired.";
+            lastMessage = "Engine Core used. Main engine room unlocked.";
             return;
         }
 
@@ -644,6 +628,12 @@ public class LevelManager {
         repairable.repair(player);
 
         if (repairable.isRepaired()) {
+            if (currentLevel == 2 && object instanceof Generator) {
+                levelTwoObjectiveCompleted = true;
+                lastMessage = "Main generator repaired. Station fixed.";
+                return;
+            }
+
             lastMessage = objectName + " repaired.";
         } else {
             lastMessage = "Repairing " + objectName + ": "
@@ -717,6 +707,12 @@ public class LevelManager {
 
     private void openChest(Chest chest) {
         if (chest.isOpened()) {
+            lastMessage = "Chest is empty.";
+            return;
+        }
+
+        if (chest.getItemName().equals("Empty")) {
+            chest.open();
             lastMessage = "Chest is empty.";
             return;
         }

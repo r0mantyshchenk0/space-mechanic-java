@@ -1,5 +1,7 @@
 CHEST,940,215,34,24,Metal Plate
 CHEST,470,440,34,24,Fuel Cell
+CHEST,1030,245,34,24,Empty
+CHEST,1040,470,34,24,Empty
 
 # Outer ship barriers
 WALL,370,80,830,20
