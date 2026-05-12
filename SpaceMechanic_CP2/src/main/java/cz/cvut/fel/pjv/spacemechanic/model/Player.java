@@ -42,16 +42,29 @@ public class Player extends Entity {
     }
 
     @Override
+
     public void render(Graphics g) {
-        // Draw player as a small astronaut marker
+        // Astronaut body
         g.setColor(new java.awt.Color(230, 240, 255));
         g.fillOval(x, y, width, height);
 
+        // Blue suit outline
         g.setColor(new java.awt.Color(80, 160, 255));
         g.drawOval(x, y, width, height);
 
-        g.setColor(java.awt.Color.BLACK);
-        g.drawString("P", x + width / 2 - 4, y + height / 2 + 5);
+        // Helmet visor
+        g.setColor(new java.awt.Color(80, 170, 230));
+        g.fillRoundRect(x + 8, y + 9, width - 16, 9, 8, 8);
+
+        g.setColor(new java.awt.Color(20, 45, 75));
+        g.drawRoundRect(x + 8, y + 9, width - 16, 9, 8, 8);
+
+        // Small backpack
+        g.setColor(new java.awt.Color(170, 185, 205));
+        g.fillRoundRect(x - 4, y + 10, 7, 14, 5, 5);
+
+        g.setColor(new java.awt.Color(80, 95, 120));
+        g.drawRoundRect(x - 4, y + 10, 7, 14, 5, 5);
     }
     public void interact() {
         // pozdeji interakce s objekty

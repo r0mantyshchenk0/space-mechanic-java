@@ -11,23 +11,35 @@ public class Elevator extends GameObject {
 
     @Override
     public void update() {
-        // Elevator is static, it only reacts to player interaction
+        // Elevator is static and reacts only to player interaction.
     }
 
     @Override
     public void render(Graphics g) {
-        // Draw elevator as a blue terminal
-        g.setColor(new Color(70, 120, 220));
-        g.fillRoundRect(x, y, width, height, 8, 8);
+        // Main elevator body
+        g.setColor(new Color(60, 125, 230));
+        g.fillRoundRect(x, y, width, height, 10, 10);
 
-        g.setColor(new Color(20, 30, 60));
-        g.drawRoundRect(x, y, width, height, 8, 8);
+        // Dark border
+        g.setColor(new Color(20, 45, 90));
+        g.drawRoundRect(x, y, width, height, 10, 10);
 
+        // Elevator door split
+        g.setColor(new Color(150, 190, 255));
+        g.drawLine(x + width / 2, y + 8, x + width / 2, y + height - 8);
+
+        // Light strip
+        g.setColor(new Color(190, 220, 255));
+        g.drawLine(x + 8, y + height / 2, x + width - 8, y + height / 2);
+
+        // Label
         g.setColor(Color.WHITE);
-        g.drawString("Lift", x + 4, y - 6);
+        String label = "Lift";
+        int labelWidth = g.getFontMetrics().stringWidth(label);
+        g.drawString(label, x + width / 2 - labelWidth / 2, y - 6);
 
-        g.setColor(new Color(180, 210, 255));
-        g.drawLine(x + 6, y + height / 2, x + width - 6, y + height / 2);
-        g.drawString("E", x + width / 2 - 4, y + height / 2 + 14);
+        // Interaction hint
+        g.setColor(new Color(220, 235, 255));
+        g.drawString("E", x + width / 2 - 4, y + height / 2 + 17);
     }
 }
