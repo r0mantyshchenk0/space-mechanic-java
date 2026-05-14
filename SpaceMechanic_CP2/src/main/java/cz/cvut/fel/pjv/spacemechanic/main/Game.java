@@ -3,11 +3,15 @@ package cz.cvut.fel.pjv.spacemechanic.main;
 import cz.cvut.fel.pjv.spacemechanic.input.InputHandler;
 import cz.cvut.fel.pjv.spacemechanic.level.LevelManager;
 import cz.cvut.fel.pjv.spacemechanic.ui.UIManager;
+
 import javax.swing.JFrame;
 import java.awt.Graphics;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
-
-
+/**
+ * Hlavni trida hry.
+ */
 public class Game {
 
     private GameState currentState;
@@ -31,6 +35,14 @@ public class Game {
         frame.add(gamePanel);
         frame.pack();
         frame.setLocationRelativeTo(null);
+
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                levelManager.saveInventoryToFile();
+            }
+        });
+
         frame.setVisible(true);
 
         gamePanel.startGameLoop();
@@ -40,7 +52,6 @@ public class Game {
         if (currentState == GameState.PLAYING) {
             levelManager.update();
 
-            // Player wins when all repairable objects are fixed
             if (levelManager.isLevelCompleted()) {
                 levelManager.saveInventoryToFile();
                 changeState(GameState.WIN);

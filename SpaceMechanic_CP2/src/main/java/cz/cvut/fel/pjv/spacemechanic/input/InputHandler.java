@@ -7,42 +7,46 @@ import cz.cvut.fel.pjv.spacemechanic.model.Player;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+/**
+ * Zpracovava vstup z klavesnice a predava akce do hry.
+ */
 public class InputHandler implements KeyListener {
 
-        private final Game game;
+    private final Game game;
 
     public InputHandler(Game game) {
         this.game = game;
     }
 
+    /**
+     * Reaguje na stisk klavesy.
+     */
     @Override
     public void keyPressed(KeyEvent e) {
-        Player player = game.getLevelManager().getPlayer();
-
+        // V menu libovolna klavesa spusti hru
         if (game.getCurrentState() == GameState.MENU) {
             game.changeState(GameState.PLAYING);
             return;
         }
-        if (e.getKeyCode() == KeyEvent.VK_C) {
-            game.getLevelManager().craftCurrentLevelRecipe();
-        }
 
+        // Escape prepina pauzu
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             if (game.getCurrentState() == GameState.PLAYING) {
                 game.changeState(GameState.PAUSED);
             } else if (game.getCurrentState() == GameState.PAUSED) {
                 game.changeState(GameState.PLAYING);
             }
-        }
-        if (e.getKeyCode() == KeyEvent.VK_P) {
-            if (game.getCurrentState() == GameState.PLAYING) {
-                game.changeState(GameState.PAUSED);
-            } else if (game.getCurrentState() == GameState.PAUSED) {
-                game.changeState(GameState.PLAYING);
-            }
+            return;
         }
 
-        if (game.getCurrentState() != GameState.PLAYING || player == null) {
+        // Ostatni klavesy se zpracovavaji jen behem hry
+        if (game.getCurrentState() != GameState.PLAYING) {
+            return;
+        }
+
+        Player player = game.getLevelManager().getPlayer();
+
+        if (player == null) {
             return;
         }
 
@@ -51,14 +55,31 @@ public class InputHandler implements KeyListener {
             case KeyEvent.VK_S -> player.setMovingDown(true);
             case KeyEvent.VK_A -> player.setMovingLeft(true);
             case KeyEvent.VK_D -> player.setMovingRight(true);
-            // Try to repair objects when player presses E
+
+            // Interakce s objektem pobliz hrace
             case KeyEvent.VK_E -> game.getLevelManager().interactWithNearbyObject();
-            case KeyEvent.VK_C -> game.getLevelManager().craftCurrentLevelRecipe();
+
+            // Zobrazeni nebo skryti inventare
+            case KeyEvent.VK_I -> game.getUiManager().toggleInventory();
+
+            // Zobrazeni nebo skryti crafting menu
+            case KeyEvent.VK_C -> game.getUiManager().toggleCraftingMenu();
+
+            // Crafting se provede pouze pri otevrenem crafting menu
+            case KeyEvent.VK_ENTER -> {
+                if (game.getUiManager().isCraftingMenuVisible()) {
+                    game.getLevelManager().craftCurrentLevelRecipe();
+                }
+            }
+
             default -> {
             }
         }
     }
 
+    /**
+     * Reaguje na pusteni pohybove klavesy.
+     */
     @Override
     public void keyReleased(KeyEvent e) {
         Player player = game.getLevelManager().getPlayer();
@@ -66,8 +87,6 @@ public class InputHandler implements KeyListener {
         if (player == null) {
             return;
         }
-
-
 
         switch (e.getKeyCode()) {
             case KeyEvent.VK_W -> player.setMovingUp(false);
@@ -79,10 +98,10 @@ public class InputHandler implements KeyListener {
         }
     }
 
+    /**
+     * Tato metoda zde musi byt kvuli rozhrani KeyListener.
+     */
     @Override
     public void keyTyped(KeyEvent e) {
-        // nic
     }
-
-
 }
