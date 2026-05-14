@@ -65,6 +65,8 @@ public class LevelManager {
         this.levelOneObjectiveCompleted = false;
         this.levelTwoObjectiveCompleted = false;
 
+        loadInventoryFromFile();
+
         createLevels();
         loadLevel(1);
     }
@@ -811,5 +813,37 @@ public class LevelManager {
         }
 
         return new SparePart(0, 0, 0, 0, itemName);
+    }
+
+    /**
+     * Nacte ulozeny inventar ze souboru.
+     */
+    public void loadInventoryFromFile() {
+        String fileName = "inventory_save.txt";
+        File file = new File(fileName);
+
+        if (!file.exists()) {
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+
+                if (line.isEmpty()) {
+                    continue;
+                }
+
+                Item item = createInventoryItemForChest(line);
+                player.getInventory().addItem(item);
+            }
+
+            lastMessage = "Inventory loaded from " + fileName;
+        } catch (IOException e) {
+            lastMessage = "Could not load inventory.";
+            System.err.println("Cannot load inventory: " + e.getMessage());
+        }
     }
 }
