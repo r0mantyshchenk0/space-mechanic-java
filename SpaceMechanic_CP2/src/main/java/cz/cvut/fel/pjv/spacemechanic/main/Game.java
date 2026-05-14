@@ -34,6 +34,9 @@ public class Game {
         frame.add(gamePanel);
         frame.pack();
         frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+
+        gamePanel.startGameLoop();
 
 
 
