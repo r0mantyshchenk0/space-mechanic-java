@@ -6,8 +6,7 @@ import cz.cvut.fel.pjv.spacemechanic.ui.UIManager;
 
 import javax.swing.JFrame;
 import java.awt.Graphics;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+
 
 /**
  * Hlavni trida hry.
@@ -36,12 +35,7 @@ public class Game {
         frame.pack();
         frame.setLocationRelativeTo(null);
 
-        frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                levelManager.saveInventoryToFile();
-            }
-        });
+
 
         frame.setVisible(true);
 
@@ -53,7 +47,6 @@ public class Game {
             levelManager.update();
 
             if (levelManager.isLevelCompleted()) {
-                levelManager.saveInventoryToFile();
                 changeState(GameState.WIN);
             }
 

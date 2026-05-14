@@ -20,3 +20,14 @@ build/
 Thumbs.db
 
 inventory_save.txt
+
+
+
+.idea/
+*.iml
+out/
+target/
+sources.txt
+inventory_save.txt
+*.class
+*.zip

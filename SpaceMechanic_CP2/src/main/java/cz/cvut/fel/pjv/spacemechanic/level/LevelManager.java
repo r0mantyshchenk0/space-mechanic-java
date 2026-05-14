@@ -65,7 +65,7 @@ public class LevelManager {
         this.levelOneObjectiveCompleted = false;
         this.levelTwoObjectiveCompleted = false;
 
-        loadInventoryFromFile();
+
 
         createLevels();
         loadLevel(1);
