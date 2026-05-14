@@ -1,6 +1,6 @@
 # Space Mechanic
 
-**Space Mechanic** je jednoduchý 2D herní engine vytvořený jako semestrální projekt v Javě.
+**Space Mechanic** je jednoduchá 2D hra vytvořená jako semestrální projekt v Javě.
 
 Hra se odehrává na poškozené vesmírné stanici. Hráč ovládá technika, který musí projít dvě části stanice, sbírat součástky, vyrábět opravné moduly, odstraňovat překážky a nakonec opravit hlavní systém stanice.
 
@@ -51,7 +51,9 @@ Po vytvoření Engine Core hráč odstraní finální překážku a dokončí hr
 | S | Pohyb dolů |
 | D | Pohyb doprava |
 | E | Interakce s objektem |
-| C | Crafting aktuálního receptu |
+| I | Zobrazení / skrytí inventáře |
+| C | Zobrazení / skrytí crafting menu |
+| ENTER | Vytvoření předmětu v crafting menu |
 | ESC | Pauza / pokračování |
 
 ## Herní mechaniky
@@ -60,19 +62,17 @@ Po vytvoření Engine Core hráč odstraní finální překážku a dokončí hr
 
 Hráč má inventář, do kterého se ukládají sebrané předměty a vyrobené moduly.
 
-Inventář se zobrazuje v levém HUD panelu.
+Inventář lze zobrazit pomocí klávesy `I`.
 
-Po dokončení hry se obsah inventáře uloží do souboru:
-
-```text
-inventory_save.txt
-```
+Při nové hře je inventář prázdný, aby hráč musel projít herní postup od začátku.
 
 ### Sběr předmětů
 
-Součástky jsou rozmístěné v mapě jako interaktivní objekty.
+Součástky jsou rozmístěné v mapě jako interaktivní objekty nebo jsou uložené v bednách.
 
-Po sebrání zmizí z mapy a přidají se do inventáře.
+Hráč s objekty interaguje pomocí klávesy `E`.
+
+Po sebrání se předmět přidá do inventáře.
 
 Příklady předmětů:
 
@@ -84,7 +84,9 @@ Příklady předmětů:
 
 ### Crafting
 
-Crafting se provádí klávesou `C`.
+Crafting menu se otevírá pomocí klávesy `C`.
+
+Samotné vytvoření předmětu se provádí klávesou `ENTER`, pokud je crafting menu otevřené.
 
 Každý level má vlastní recept:
 
@@ -126,6 +128,12 @@ Hráč s ním může interagovat pomocí klávesy `E`.
 
 Terminál zobrazuje nápovědu, která je definovaná v externím level souboru.
 
+### Opravitelné objekty
+
+Některé objekty ve hře lze opravit pomocí správné součástky.
+
+Oprava probíhá postupně a její stav je vidět v HUD panelu.
+
 ## Externí level soubory
 
 Levely jsou načítány z externích textových souborů:
@@ -165,6 +173,7 @@ Podporované typy objektů:
 | ENGINE | Opravitelný systém |
 | GENERATOR | Opravitelný systém |
 | DOOR | Opravitelný dveřní systém |
+| CHEST | Bedna s předmětem |
 
 ## Struktura projektu
 
@@ -181,7 +190,7 @@ cz.cvut.fel.pjv.spacemechanic
 | level | Načítání levelů, správa objektů, přepínání levelů |
 | model | Herní objekty, hráč, inventář, dveře, výtah, terminál |
 | collision | Kolize mezi hráčem a objekty |
-| ui | HUD, menu, pause screen, win screen |
+| ui | HUD, menu, inventář, crafting, pause screen, win screen |
 
 ## Důležité třídy
 
@@ -199,13 +208,19 @@ Swing panel, který spouští herní smyčku a vykresluje hru.
 
 Spravuje aktuální level, hráče a seznam objektů.
 
-Načítá levely z externích souborů, řeší interakce, crafting, výtah, překážky a podmínku výhry.
+Načítá levely z externích souborů, řeší interakce, crafting, výtah, překážky, opravy a podmínku výhry.
+
+### InputHandler
+
+Zpracovává vstup z klávesnice.
+
+Řeší pohyb hráče, interakci, inventář, crafting menu a pauzu.
 
 ### Player
 
 Reprezentuje hráče.
 
-Obsahuje pohyb, pozici, životy a vykreslení hráče.
+Obsahuje pohyb, pozici, životy, inventář a vykreslení hráče.
 
 ### Inventory
 
@@ -214,6 +229,14 @@ Ukládá sebrané předměty a vyrobené moduly.
 ### Item, SparePart, ToolItem
 
 Třídy pro sebratelné předměty.
+
+### Chest
+
+Bedna, ze které hráč může získat předmět.
+
+### RepairableObject
+
+Společný základ pro objekty, které lze ve hře opravit.
 
 ### LockedDoor
 
@@ -229,13 +252,21 @@ Terminál, který zobrazuje hráči nápovědu.
 
 ### UIManager
 
-Vykresluje uživatelské rozhraní, inventář, zprávy, stav oprav a obrazovky hry.
+Vykresluje uživatelské rozhraní, inventář, crafting menu, zprávy, stav oprav a obrazovky hry.
 
 ## Jak spustit projekt
 
-Projekt lze spustit v IntelliJ IDEA.
+Projekt je Maven projekt.
 
-Hlavní třída:
+Nejdříve je potřeba otevřít složku, ve které se nachází soubor `pom.xml`.
+
+Spuštění hry přes Maven:
+
+```bash
+mvn exec:java
+```
+
+Projekt lze také spustit přímo v IntelliJ IDEA spuštěním hlavní třídy:
 
 ```text
 cz.cvut.fel.pjv.spacemechanic.main.Game
@@ -243,13 +274,49 @@ cz.cvut.fel.pjv.spacemechanic.main.Game
 
 Projekt používá Java Swing pro grafické rozhraní.
 
+## Testy
+
+Projekt obsahuje jednotkové testy pomocí JUnit 5.
+
+Testy jsou uložené zde:
+
+```text
+src/test/java/cz/cvut/fel/pjv/spacemechanic/SpaceMechanicTests.java
+```
+
+Testy ověřují:
+
+- práci s inventářem,
+- sběr součástky,
+- sběr nástroje,
+- opravu objektu bez potřebné součástky,
+- opravu objektu se správnou součástkou,
+- načítání levelů,
+- crafting v prvním levelu,
+- crafting ve druhém levelu.
+
+Spuštění testů:
+
+```bash
+mvn test
+```
+
+Poslední výsledek testů:
+
+```text
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS
+```
+
 ## Implementované funkce
 
 - 2D herní smyčka
 - Pohyb hráče
 - GUI / HUD
 - Inventář
+- Inventory panel
 - Sběr předmětů
+- Crafting menu
 - Crafting systém
 - Zamčené dveře
 - Kolizní překážky
@@ -257,5 +324,20 @@ Projekt používá Java Swing pro grafické rozhraní.
 - Dva levely
 - Načítání levelů z externích souborů
 - Terminál s nápovědou
-- Uložení inventáře do souboru
+- Opravitelné objekty
+- Stav oprav v HUD
+- Pauza
 - Stav výhry
+- Maven konfigurace
+- JUnit testy
+
+## Stav projektu
+
+Hra je funkční a obsahuje kompletní základní herní průchod.
+
+Hráč může projít první level, vytvořit Power Module, odemknout cestu k výtahu, přejít do druhého levelu, vytvořit Engine Core a dokončit hru.
+
+## Autor
+
+Roman Tyshchenko  
+ČVUT FEL
