@@ -18,11 +18,21 @@ public abstract class GameObject {
         this.height = height;
         this.active = true;
     }
-
+    /**
+     * Aktualizuje stav objektu.
+     */
     public abstract void update();
-
+    /**
+     * Vykresli objekt na obrazovku.
+     *
+     * @param g graficky kontext
+     */
     public abstract void render(Graphics g);
-
+    /**
+     * Vraci obdelnik pouzivany pro kontrolu kolizi.
+     *
+     * @return hranice objektu
+     */
     public Rectangle getBounds() {
         return new Rectangle(x, y, width, height);
     }

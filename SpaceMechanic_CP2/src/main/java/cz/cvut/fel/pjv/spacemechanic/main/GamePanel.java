@@ -1,4 +1,4 @@
-package cz.cvut.fel.pjv.spacemechanic.main;
+﻿package cz.cvut.fel.pjv.spacemechanic.main;
 
 import cz.cvut.fel.pjv.spacemechanic.input.InputHandler;
 
@@ -6,18 +6,14 @@ import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 
 /**
  * Panel, na kterem bezi herni smycka a vykreslovani hry.
  */
 public class GamePanel extends JPanel implements Runnable {
 
-    private static final int BASE_WIDTH = 1280;
-    private static final int BASE_HEIGHT = 720;
-
-    // Vetsi meritko pro prezentaci na notebooku/projektoru.
-    private static final double PRESENTATION_SCALE = 1.7;
+    private static final int WIDTH = 1280;
+    private static final int HEIGHT = 720;
 
     private final Game game;
     private final InputHandler inputHandler;
@@ -25,14 +21,17 @@ public class GamePanel extends JPanel implements Runnable {
     private Thread gameThread;
     private boolean running;
 
+    /**
+     * Vytvori herni panel a pripoji zpracovani vstupu.
+     *
+     * @param game hlavni instance hry
+     * @param inputHandler zpracovani vstupu z klavesnice
+     */
     public GamePanel(Game game, InputHandler inputHandler) {
         this.game = game;
         this.inputHandler = inputHandler;
 
-        int windowWidth = (int) (BASE_WIDTH * PRESENTATION_SCALE);
-        int windowHeight = (int) (BASE_HEIGHT * PRESENTATION_SCALE);
-
-        setPreferredSize(new Dimension(windowWidth, windowHeight));
+        setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setBackground(new Color(7, 11, 20));
         setOpaque(true);
         setFocusable(true);
@@ -40,7 +39,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
-     * Spusti hlavni herni smycku.
+     * Spusti hlavni herni smycku v samostatnem vlakne.
      */
     public void startGameLoop() {
         if (gameThread == null) {
@@ -51,7 +50,8 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
-     * Hlavni game loop.
+     * Hlavni herni smycka.
+     * Pravidelne aktualizuje logiku hry a prekresluje panel.
      */
     @Override
     public void run() {
@@ -74,7 +74,9 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
-     * Vykresli hru ve vetsim meritku pro prezentaci.
+     * Vykresli aktualni stav hry na panel.
+     *
+     * @param g graficky kontext
      */
     @Override
     protected void paintComponent(Graphics g) {
@@ -83,11 +85,6 @@ public class GamePanel extends JPanel implements Runnable {
         g.setColor(new Color(7, 11, 20));
         g.fillRect(0, 0, getWidth(), getHeight());
 
-        Graphics2D g2 = (Graphics2D) g.create();
-
-        g2.scale(PRESENTATION_SCALE, PRESENTATION_SCALE);
-        game.render(g2);
-
-        g2.dispose();
+        game.render(g);
     }
 }

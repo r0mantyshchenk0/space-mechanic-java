@@ -11,7 +11,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 /**
- * Vykresluje menu, HUD, inventar, crafting a koncove obrazovky.
+ * Vykresluje uzivatelske rozhrani hry.
+ * Stara se o HUD, inventar, crafting menu, pauzu a obrazovku vyhry.
  */
 public class UIManager {
 
@@ -28,6 +29,8 @@ public class UIManager {
 
     /**
      * Vykresli UI podle aktualniho stavu hry.
+     *
+     * @param g graficky kontext
      */
     public void render(Graphics g) {
         GameState state = game.getCurrentState();
@@ -54,7 +57,7 @@ public class UIManager {
     }
 
     /**
-     * Prepne zobrazeni inventare.
+     * Prepne viditelnost inventare.
      */
     public void toggleInventory() {
         inventoryVisible = !inventoryVisible;
@@ -66,7 +69,7 @@ public class UIManager {
     }
 
     /**
-     * Prepne zobrazeni crafting menu.
+     * Prepne viditelnost crafting menu.
      */
     public void toggleCraftingMenu() {
         craftingMenuVisible = !craftingMenuVisible;
@@ -75,7 +78,11 @@ public class UIManager {
             inventoryVisible = false;
         }
     }
-
+    /**
+     * Vraci informaci, jestli je crafting menu otevrene.
+     *
+     * @return true, pokud je crafting menu viditelne
+     */
     public boolean isCraftingMenuVisible() {
         return craftingMenuVisible;
     }
@@ -90,7 +97,9 @@ public class UIManager {
     }
 
     /**
-     * Vykresli hlavni herni panel s informacemi.
+     * Vykresli hlavni herni HUD.
+     *
+     * @param g graficky kontext
      */
     public void drawHUD(Graphics g) {
         Player player = game.getLevelManager().getPlayer();
@@ -190,6 +199,8 @@ public class UIManager {
 
     /**
      * Vykresli obsah inventare hrace.
+     *
+     * @param g graficky kontext
      */
     private void drawInventory(Graphics g) {
         Player player = game.getLevelManager().getPlayer();
@@ -226,6 +237,8 @@ public class UIManager {
 
     /**
      * Vykresli crafting menu s receptem aktualniho levelu.
+     *
+     * @param g graficky kontext
      */
     private void drawCraftingMenu(Graphics g) {
         int panelX = 930;

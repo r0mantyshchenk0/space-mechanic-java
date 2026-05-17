@@ -8,7 +8,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 /**
- * Zpracovava vstup z klavesnice a predava akce do hry.
+ * Zpracovava vstup z klavesnice.
+ * Predava akce do hry, level manageru a UI manageru.
  */
 public class InputHandler implements KeyListener {
 
@@ -19,7 +20,9 @@ public class InputHandler implements KeyListener {
     }
 
     /**
-     * Reaguje na stisk klavesy.
+     * Zpracuje stisk klavesy.
+     *
+     * @param e udalost klavesnice
      */
     @Override
     public void keyPressed(KeyEvent e) {
@@ -29,7 +32,11 @@ public class InputHandler implements KeyListener {
             return;
         }
 
-        // Escape prepina pauzu
+        /**
+         * Zpracuje pusteni pohybove klavesy.
+         *
+         * @param e udalost klavesnice
+         */
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             if (game.getCurrentState() == GameState.PLAYING) {
                 game.changeState(GameState.PAUSED);

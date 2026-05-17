@@ -10,6 +10,7 @@ import java.awt.Graphics;
 
 /**
  * Hlavni trida hry.
+ * Inicializuje hlavni herni komponenty a ridi aktualni stav hry.
  */
 public class Game {
 
@@ -19,6 +20,9 @@ public class Game {
     private final UIManager uiManager;
     private final InputHandler inputHandler;
 
+    /**
+     * Vytvori zakladni objekty hry a propoji herni logiku s UI.
+     */
     public Game() {
         this.currentState = GameState.MENU;
         this.levelManager = new LevelManager();
@@ -26,7 +30,9 @@ public class Game {
         this.inputHandler = new InputHandler(this);
         this.gamePanel = new GamePanel(this, inputHandler);
     }
-
+    /**
+     * Vytvori hlavni okno hry a spusti herni smycku.
+     */
     public void start() {
         JFrame frame = new JFrame("Space Mechanic");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -45,7 +51,10 @@ public class Game {
         gamePanel.startGameLoop();
     }
 
-    public void update() {
+    /**
+     * Aktualizuje herni logiku podle aktualniho stavu hry.
+     */
+    public void update()  {
         if (currentState == GameState.PLAYING) {
             levelManager.update();
 
@@ -59,11 +68,21 @@ public class Game {
         }
     }
 
+    /**
+     * Vykresli aktualni level a uzivatelske rozhrani.
+     *
+     * @param g graficky kontext
+     */
     public void render(Graphics g) {
         levelManager.render(g);
         uiManager.render(g);
     }
 
+    /**
+     * Zmeni aktualni stav hry.
+     *
+     * @param newState novy stav hry
+     */
     public void changeState(GameState newState) {
         this.currentState = newState;
     }

@@ -10,7 +10,9 @@ import cz.cvut.fel.pjv.spacemechanic.model.ToolItem;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+/**
+ * Jednotkove testy pro zakladni herni logiku projektu Space Mechanic.
+ */
 class SpaceMechanicTests {
 
     /**
@@ -159,5 +161,49 @@ class SpaceMechanicTests {
         assertTrue(player.getInventory().containsItem("Engine Core"));
         assertFalse(player.getInventory().containsItem("Metal Plate"));
         assertFalse(player.getInventory().containsItem("Fuel Cell"));
+    }
+    /**
+     * Testuje, ze crafting neprobehne bez potrebnych soucastek.
+     */
+    @Test
+    void craftingShouldNotWorkWithoutRequiredParts() {
+        LevelManager levelManager = new LevelManager();
+        Player player = levelManager.getPlayer();
+
+        levelManager.craftCurrentLevelRecipe();
+
+        assertFalse(player.getInventory().containsItem("Power Module"));
+    }
+    /**
+     * Testuje, ze crafting spotrebuje potrebne soucastky.
+     */
+    @Test
+    void craftingShouldConsumeRequiredPartsOnlyOnce() {
+        LevelManager levelManager = new LevelManager();
+        Player player = levelManager.getPlayer();
+
+        player.getInventory().addItem(new SparePart(0, 0, 0, 0, "Wire"));
+        player.getInventory().addItem(new SparePart(0, 0, 0, 0, "Battery"));
+
+        levelManager.craftCurrentLevelRecipe();
+        levelManager.craftCurrentLevelRecipe();
+
+        long powerModuleCount = player.getInventory().getItems().stream()
+                .filter(item -> item.getName().equals("Power Module"))
+                .count();
+
+        assertEquals(1, powerModuleCount);
+    }
+    /**
+     * Testuje vychozi stav hry po vytvoreni level manageru.
+     */
+    @Test
+    void levelManagerShouldStartInInitialState() {
+        LevelManager levelManager = new LevelManager();
+
+        assertEquals(1, levelManager.getCurrentLevel());
+        assertFalse(levelManager.isLevelCompleted());
+        assertNotNull(levelManager.getPlayer());
+        assertFalse(levelManager.getObjects().isEmpty());
     }
 }

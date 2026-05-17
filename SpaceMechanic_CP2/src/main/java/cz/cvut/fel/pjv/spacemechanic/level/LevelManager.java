@@ -32,6 +32,7 @@ import java.util.List;
 
 /**
  * Spravuje levely, objekty, hrace a hlavni herni logiku.
+ * Resi nacitani levelu, interakce, crafting, opravy a vyhru.
  */
 public class LevelManager {
 
@@ -49,7 +50,7 @@ public class LevelManager {
     private boolean levelTwoObjectiveCompleted;
 
     /**
-     * Vytvori zakladni stav hry a nacte prvni level.
+     * Vytvori level manager, nacte levely a nastavi prvni level.
      */
     public LevelManager() {
         this.currentLevel = 1;
@@ -72,7 +73,7 @@ public class LevelManager {
     }
 
     /**
-     * Nacte objekty pro oba levely ze souboru.
+     * Nacte objekty pro oba levely z externich souboru.
      */
     private void createLevels() {
         levelOneObjects.clear();
@@ -83,7 +84,10 @@ public class LevelManager {
     }
 
     /**
-     * Nacte seznam objektu z textoveho souboru levelu.
+     * Nacte objekty z textoveho souboru levelu.
+     *
+     * @param fileName cesta k souboru levelu
+     * @return seznam nactenych hernich objektu
      */
     private List<GameObject> loadObjectsFromFile(String fileName) {
         List<GameObject> loadedObjects = new ArrayList<>();
@@ -113,7 +117,11 @@ public class LevelManager {
     }
 
     /**
-     * Najde a otevre soubor levelu.
+     * Otevre level soubor z resources nebo z dostupnych cest.
+     *
+     * @param fileName cesta k souboru levelu
+     * @return reader pro cteni souboru
+     * @throws IOException pokud soubor nelze najit nebo otevrit
      */
     private BufferedReader openLevelFile(String fileName) throws IOException {
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileName);
@@ -146,7 +154,10 @@ public class LevelManager {
     }
 
     /**
-     * Vytvori herni objekt podle jednoho radku v level souboru.
+     * Vytvori herni objekt podle jednoho radku level souboru.
+     *
+     * @param line radek z level souboru
+     * @return vytvoreny herni objekt
      */
     private GameObject createObjectFromLine(String line) {
         String[] parts = line.split(",");
@@ -210,6 +221,8 @@ public class LevelManager {
 
     /**
      * Nastavi aktivni level a vychozi pozici hrace.
+     *
+     * @param level cislo levelu
      */
     public void loadLevel(int level) {
         objects.clear();
@@ -229,7 +242,7 @@ public class LevelManager {
     }
 
     /**
-     * Aktualizuje hrace, objekty a resi kolize.
+     * Aktualizuje hrace, objekty a kontroluje kolize.
      */
     public void update() {
         int oldX = player.getBounds().x;
@@ -277,7 +290,9 @@ public class LevelManager {
     }
 
     /**
-     * Vykresli pozadi, hrace a aktivni objekty.
+     * Vykresli pozadi levelu, hrace a aktivni objekty.
+     *
+     * @param g graficky kontext
      */
     public void render(Graphics g) {
         drawShipBackground(g);
@@ -621,7 +636,9 @@ public class LevelManager {
     }
 
     /**
-     * Pokusi se odemknout dvere pomoci predmetu z inventare.
+     * Pokusi se odemknout dvere pomoci modulu z inventare.
+     *
+     * @param door zamcene dvere
      */
     private void unlockDoor(LockedDoor door) {
         if (!player.getInventory().containsItem(door.getRequiredModule())) {
@@ -646,7 +663,10 @@ public class LevelManager {
     }
 
     /**
-     * Kontroluje, jestli je hrac dost blizko k objektu.
+     * Zkontroluje, jestli je hrac dost blizko k objektu.
+     *
+     * @param object kontrolovany objekt
+     * @return true, pokud je objekt v dosahu interakce
      */
     private boolean isPlayerNear(GameObject object) {
         Rectangle playerBounds = player.getBounds();
@@ -662,7 +682,7 @@ public class LevelManager {
     }
 
     /**
-     * Prepne hrace mezi levely.
+     * Prepne hrace do dalsiho levelu, pokud je splnen cil.
      */
     private void switchLevel() {
         if (currentLevel == 1 && !levelOneObjectiveCompleted) {
@@ -678,7 +698,10 @@ public class LevelManager {
     }
 
     /**
-     * Opravi objekt, pokud ma hrac potrebnou soucastku.
+     * Pokusi se opravit objekt pomoci potrebne soucastky.
+     *
+     * @param repairable opravitelny objekt
+     * @param object objekt ve hre
      */
     private void repairObject(RepairableObject repairable, GameObject object) {
         String objectName = object.getClass().getSimpleName();
@@ -748,7 +771,7 @@ public class LevelManager {
     }
 
     /**
-     * Spusti crafting podle aktualniho levelu.
+     * Spusti crafting receptu podle aktualniho levelu.
      */
     public void craftCurrentLevelRecipe() {
         if (currentLevel == 1) {
@@ -759,7 +782,11 @@ public class LevelManager {
     }
 
     /**
-     * Vytvori novy predmet ze dvou casti v inventari.
+     * Vytvori novy predmet ze dvou soucastek v inventari.
+     *
+     * @param firstItem prvni potrebny predmet
+     * @param secondItem druhy potrebny predmet
+     * @param resultItem vysledny predmet
      */
     private void craftItem(String firstItem, String secondItem, String resultItem) {
         boolean hasFirstItem = player.getInventory().containsItem(firstItem);
@@ -783,7 +810,9 @@ public class LevelManager {
     }
 
     /**
-     * Otevre bednu a prida predmet do inventare.
+     * Otevre bednu a prida nalezeny predmet do inventare.
+     *
+     * @param chest bedna s predmetem
      */
     private void openChest(Chest chest) {
         if (chest.isOpened()) {
