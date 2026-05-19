@@ -7,14 +7,14 @@ import cz.cvut.fel.pjv.spacemechanic.model.RepairableObject;
 
 import java.util.List;
 /**
- * Spravuje zakladni kolize mezi hracem a hernimi objekty.
+ * Manages basic collisions between the player and game objects.
  */
 public class CollisionManager {
     /**
-     * Zkontroluje kolize mezi hracem a aktivnimi objekty.
+     * Checks collisions between the player and active objects.
      *
-     * @param player hrac
-     * @param objects objekty v aktualnim levelu
+     * @param player player object
+     * @param objects objects in the current level
      */
     public void checkCollisions(Player player, List<GameObject> objects) {
         for (GameObject object : objects) {

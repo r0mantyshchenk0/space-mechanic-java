@@ -6,19 +6,13 @@ import cz.cvut.fel.pjv.spacemechanic.ui.UIManager;
 
 import javax.swing.JFrame;
 import java.awt.Graphics;
-import java.util.logging.Logger;
+
 
 /**
  * Main game class.
  * Initializes the main game components and controls the current game state.
  */
 public class Game {
-
-    private static final Logger LOGGER =
-            Logger.getLogger(Game.class.getName());
-
-    private static final boolean LOGGING_ENABLED =
-            Boolean.parseBoolean(System.getProperty("logging", "true"));
 
     private GameState currentState;
     private final GamePanel gamePanel;
@@ -27,7 +21,7 @@ public class Game {
     private final InputHandler inputHandler;
 
     /**
-     * Creates the main game objects and connects the game logic with the UI.
+     * Creates the basic game objects and connects the game logic with the UI.
      */
     public Game() {
         this.currentState = GameState.MENU;
@@ -35,10 +29,7 @@ public class Game {
         this.uiManager = new UIManager(this);
         this.inputHandler = new InputHandler(this);
         this.gamePanel = new GamePanel(this, inputHandler);
-
-        log("Game initialized.");
     }
-
     /**
      * Creates the main game window and starts the game loop.
      */
@@ -53,13 +44,17 @@ public class Game {
 
         gamePanel.startGameLoop();
 
-        log("Game window created and game loop started.");
+
+
+        frame.setVisible(true);
+
+        gamePanel.startGameLoop();
     }
 
     /**
      * Updates the game logic according to the current game state.
      */
-    public void update() {
+    public void update()  {
         if (currentState == GameState.PLAYING) {
             levelManager.update();
 
@@ -90,29 +85,6 @@ public class Game {
      */
     public void changeState(GameState newState) {
         this.currentState = newState;
-        log("Game state changed to: " + newState);
-    }
-
-    /**
-     * Saves the current game state.
-     */
-    public void saveGameState() {
-        levelManager.saveGameState();
-        log("Game state saved.");
-    }
-
-    /**
-     * Loads the previously saved game state.
-     */
-    public void loadGameState() {
-        levelManager.loadGameState();
-        log("Game state loaded.");
-    }
-
-    private static void log(String message) {
-        if (LOGGING_ENABLED) {
-            LOGGER.info(message);
-        }
     }
 
     public GameState getCurrentState() {

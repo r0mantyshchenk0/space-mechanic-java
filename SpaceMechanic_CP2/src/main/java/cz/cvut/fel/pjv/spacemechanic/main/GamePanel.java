@@ -8,7 +8,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 
 /**
- * Panel, na kterem bezi herni smycka a vykreslovani hry.
+ * Panel responsible for the game loop and rendering.
  */
 public class GamePanel extends JPanel implements Runnable {
 
@@ -22,10 +22,10 @@ public class GamePanel extends JPanel implements Runnable {
     private boolean running;
 
     /**
-     * Vytvori herni panel a pripoji zpracovani vstupu.
+     * Creates the game panel and connects keyboard input handling.
      *
-     * @param game hlavni instance hry
-     * @param inputHandler zpracovani vstupu z klavesnice
+     * @param game main game instance
+     * @param inputHandler keyboard input handler
      */
     public GamePanel(Game game, InputHandler inputHandler) {
         this.game = game;
@@ -39,7 +39,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
-     * Spusti hlavni herni smycku v samostatnem vlakne.
+     * Starts the main game loop in a separate thread.
      */
     public void startGameLoop() {
         if (gameThread == null) {
@@ -50,8 +50,8 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
-     * Hlavni herni smycka.
-     * Pravidelne aktualizuje logiku hry a prekresluje panel.
+     * Main game loop.
+     * It regularly updates the game logic and repaints the panel.
      */
     @Override
     public void run() {
@@ -74,9 +74,9 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
-     * Vykresli aktualni stav hry na panel.
+     * Renders the current game state on the panel.
      *
-     * @param g graficky kontext
+     * @param g graphics context
      */
     @Override
     protected void paintComponent(Graphics g) {

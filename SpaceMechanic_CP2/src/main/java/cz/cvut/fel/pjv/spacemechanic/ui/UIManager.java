@@ -11,8 +11,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 /**
- * Vykresluje uzivatelske rozhrani hry.
- * Stara se o HUD, inventar, crafting menu, pauzu a obrazovku vyhry.
+ * Renders the game user interface.
+ * Handles HUD, inventory, crafting menu, pause and win screen.
  */
 public class UIManager {
 
@@ -28,9 +28,9 @@ public class UIManager {
     }
 
     /**
-     * Vykresli UI podle aktualniho stavu hry.
+     * Renders the UI according to the current game state.
      *
-     * @param g graficky kontext
+     * @param g graphics context
      */
     public void render(Graphics g) {
         GameState state = game.getCurrentState();
@@ -57,19 +57,19 @@ public class UIManager {
     }
 
     /**
-     * Prepne viditelnost inventare.
+     * Toggles inventory visibility.
      */
     public void toggleInventory() {
         inventoryVisible = !inventoryVisible;
 
-        // Inventar a crafting menu se nezobrazuji zaroven
+        // Inventory and crafting menu are not shown at the same time
         if (inventoryVisible) {
             craftingMenuVisible = false;
         }
     }
 
     /**
-     * Prepne viditelnost crafting menu.
+     * Toggles crafting menu visibility.
      */
     public void toggleCraftingMenu() {
         craftingMenuVisible = !craftingMenuVisible;
@@ -79,16 +79,16 @@ public class UIManager {
         }
     }
     /**
-     * Vraci informaci, jestli je crafting menu otevrene.
+     * Returns whether the crafting menu is open.
      *
-     * @return true, pokud je crafting menu viditelne
+     * @return true if the crafting menu is visible
      */
     public boolean isCraftingMenuVisible() {
         return craftingMenuVisible;
     }
 
     /**
-     * Vykresli uvodni menu hry.
+     * Renders the main menu screen.
      */
     public void drawMenu(Graphics g) {
         g.setColor(Color.WHITE);
@@ -97,9 +97,9 @@ public class UIManager {
     }
 
     /**
-     * Vykresli hlavni herni HUD.
+     * Renders the main in-game HUD.
      *
-     * @param g graficky kontext
+     * @param g graphics context
      */
     public void drawHUD(Graphics g) {
         Player player = game.getLevelManager().getPlayer();
@@ -157,7 +157,7 @@ public class UIManager {
     }
 
     /**
-     * Vykresli stav opravitelnych objektu v aktualnim levelu.
+     * Renders the repair status of objects in the current level.
      */
     private void drawRepairStatus(Graphics g, int panelX, int panelY) {
         int panelWidth = 330;
@@ -198,9 +198,9 @@ public class UIManager {
     }
 
     /**
-     * Vykresli obsah inventare hrace.
+     * Renders the player inventory content.
      *
-     * @param g graficky kontext
+     * @param g graphics context
      */
     private void drawInventory(Graphics g) {
         Player player = game.getLevelManager().getPlayer();
@@ -236,9 +236,9 @@ public class UIManager {
     }
 
     /**
-     * Vykresli crafting menu s receptem aktualniho levelu.
+     * Renders the crafting menu with the recipe for the current level.
      *
-     * @param g graficky kontext
+     * @param g graphics context
      */
     private void drawCraftingMenu(Graphics g) {
         int panelX = 930;
@@ -260,7 +260,7 @@ public class UIManager {
 
         y += 30;
 
-        // Recept se meni podle aktualniho levelu
+        // The recipe changes according to the current level
         if (game.getLevelManager().getCurrentLevel() == 1) {
             g.drawString("Recipe:", x, y);
             y += 25;
@@ -280,7 +280,7 @@ public class UIManager {
     }
 
     /**
-     * Vykresli obrazovku pauzy.
+     * Renders the pause screen.
      */
     public void drawPause(Graphics g) {
         g.setColor(new Color(20, 24, 32, 220));
@@ -292,7 +292,7 @@ public class UIManager {
     }
 
     /**
-     * Vykresli obrazovku prohry.
+     * Renders the game over screen.
      */
     public void drawGameOver(Graphics g) {
         g.setColor(new Color(40, 20, 20, 220));
@@ -303,7 +303,7 @@ public class UIManager {
     }
 
     /**
-     * Vykresli obrazovku vyhry.
+     * Renders the win screen.
      */
     public void drawWin(Graphics g) {
         g.setColor(new Color(20, 40, 25, 220));

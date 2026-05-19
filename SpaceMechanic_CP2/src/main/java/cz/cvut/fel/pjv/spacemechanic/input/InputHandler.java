@@ -8,8 +8,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 /**
- * Zpracovava vstup z klavesnice.
- * Predava akce do hry, level manageru a UI manageru.
+ * Handles keyboard input.
+ * Passes actions to the game, level manager and UI manager.
  */
 public class InputHandler implements KeyListener {
 
@@ -20,22 +20,22 @@ public class InputHandler implements KeyListener {
     }
 
     /**
-     * Zpracuje stisk klavesy.
+     * Handles a key press event.
      *
-     * @param e udalost klavesnice
+     * @param e keyboard event
      */
     @Override
     public void keyPressed(KeyEvent e) {
-        // V menu libovolna klavesa spusti hru
+        // Any key in the menu starts the game
         if (game.getCurrentState() == GameState.MENU) {
             game.changeState(GameState.PLAYING);
             return;
         }
 
         /**
-         * Zpracuje pusteni pohybove klavesy.
+         * Handles releasing a movement key.
          *
-         * @param e udalost klavesnice
+         * @param e keyboard event
          */
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             if (game.getCurrentState() == GameState.PLAYING) {
@@ -46,7 +46,7 @@ public class InputHandler implements KeyListener {
             return;
         }
 
-        // Ostatni klavesy se zpracovavaji jen behem hry
+        // Other keys are handled only during gameplay
         if (game.getCurrentState() != GameState.PLAYING) {
             return;
         }
@@ -62,19 +62,17 @@ public class InputHandler implements KeyListener {
             case KeyEvent.VK_S -> player.setMovingDown(true);
             case KeyEvent.VK_A -> player.setMovingLeft(true);
             case KeyEvent.VK_D -> player.setMovingRight(true);
-            case KeyEvent.VK_F5 -> game.saveGameState();
-            case KeyEvent.VK_F9 -> game.loadGameState();
 
-            // Interakce s objektem pobliz hrace
+            // Interaction with an object near the player
             case KeyEvent.VK_E -> game.getLevelManager().interactWithNearbyObject();
 
-            // Zobrazeni nebo skryti inventare
+            // Show or hide the inventory
             case KeyEvent.VK_I -> game.getUiManager().toggleInventory();
 
-            // Zobrazeni nebo skryti crafting menu
+            // Show or hide the crafting menu
             case KeyEvent.VK_C -> game.getUiManager().toggleCraftingMenu();
 
-            // Crafting se provede pouze pri otevrenem crafting menu
+            // Crafting is performed only when the crafting menu is open
             case KeyEvent.VK_ENTER -> {
                 if (game.getUiManager().isCraftingMenuVisible()) {
                     game.getLevelManager().craftCurrentLevelRecipe();
@@ -87,7 +85,7 @@ public class InputHandler implements KeyListener {
     }
 
     /**
-     * Reaguje na pusteni pohybove klavesy.
+     * Reacts to releasing a movement key.
      */
     @Override
     public void keyReleased(KeyEvent e) {
@@ -108,7 +106,7 @@ public class InputHandler implements KeyListener {
     }
 
     /**
-     * Tato metoda zde musi byt kvuli rozhrani KeyListener.
+     * This method is required by the KeyListener interface.
      */
     @Override
     public void keyTyped(KeyEvent e) {

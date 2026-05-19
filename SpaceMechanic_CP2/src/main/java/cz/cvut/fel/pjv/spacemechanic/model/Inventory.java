@@ -3,8 +3,8 @@ package cz.cvut.fel.pjv.spacemechanic.model;
 import java.util.ArrayList;
 import java.util.List;
 /**
- * Inventar hrace.
- * Uchovava sebrane predmety a vyrobene moduly.
+ * Player inventory.
+ * Stores collected items and crafted modules.
  */
 public class Inventory {
 
@@ -14,25 +14,25 @@ public class Inventory {
         this.items = new ArrayList<>();
     }
     /**
-     * Prida predmet do inventare.
+     * Adds an item to the inventory.
      *
-     * @param item pridavany predmet
+     * @param item item to add
      */
     public void addItem(Item item) {
         items.add(item);
     }
     /**
-     * Odebere prvni predmet se zadanym nazvem.
+     * Removes the first item with the given name.
      *
-     * @param item Name nazev predmetu
+     * @param itemName name of the item
      */
     public void removeItem(Item item) {
         items.remove(item);
     }
     /**
-     * Odebere prvni predmet se zadanym nazvem.
+     * Removes the first item with the given name.
      *
-     * @param itemName nazev predmetu
+     * @param itemName name of the item
      */
     public void removeItem(String itemName) {
         for (int i = 0; i < items.size(); i++) {
@@ -43,10 +43,10 @@ public class Inventory {
         }
     }
     /**
-     * Zkontroluje, jestli inventar obsahuje predmet.
+     * Checks whether the inventory contains an item.
      *
-     * @param itemName nazev hledaneho predmetu
-     * @return true, pokud je predmet v inventari
+     * @param itemName name of the searched item
+     * @return true if the item is in the inventory
      */
     public boolean containsItem(String itemName) {
         for (Item item : items) {

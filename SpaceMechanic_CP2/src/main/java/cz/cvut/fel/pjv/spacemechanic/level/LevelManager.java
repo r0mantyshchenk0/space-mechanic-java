@@ -15,11 +15,7 @@ import cz.cvut.fel.pjv.spacemechanic.model.ShipTerminal;
 import cz.cvut.fel.pjv.spacemechanic.model.SparePart;
 import cz.cvut.fel.pjv.spacemechanic.model.ToolItem;
 import cz.cvut.fel.pjv.spacemechanic.model.Wall;
-import cz.cvut.fel.pjv.spacemechanic.save.SaveManager;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.logging.Logger;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -35,20 +31,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Spravuje levely, objekty, hrace a hlavni herni logiku.
- * Resi nacitani levelu, interakce, crafting, opravy a vyhru.
+ * Manages levels, objects, player and the main game logic.
+ * Handles level loading, interactions, crafting, repairs and winning.
  */
 public class LevelManager {
 
     private int currentLevel;
-
-    private static final Logger LOGGER =
-            Logger.getLogger(LevelManager.class.getName());
-
-    private static final boolean LOGGING_ENABLED =
-            Boolean.parseBoolean(System.getProperty("logging", "true"));
-
-    private final SaveManager saveManager = new SaveManager();
 
     private final List<GameObject> objects;
     private final List<GameObject> levelOneObjects;
@@ -62,7 +50,7 @@ public class LevelManager {
     private boolean levelTwoObjectiveCompleted;
 
     /**
-     * Vytvori level manager, nacte levely a nastavi prvni level.
+     * Creates the level manager, loads levels and sets the first level.
      */
     public LevelManager() {
         this.currentLevel = 1;
@@ -85,7 +73,7 @@ public class LevelManager {
     }
 
     /**
-     * Nacte objekty pro oba levely z externich souboru.
+     * Loads objects for both levels from external files.
      */
     private void createLevels() {
         levelOneObjects.clear();
@@ -96,10 +84,10 @@ public class LevelManager {
     }
 
     /**
-     * Nacte objekty z textoveho souboru levelu.
+     * Loads objects from a level text file.
      *
-     * @param fileName cesta k souboru levelu
-     * @return seznam nactenych hernich objektu
+     * @param fileName path to the level file
+     * @return list of loaded game objects
      */
     private List<GameObject> loadObjectsFromFile(String fileName) {
         List<GameObject> loadedObjects = new ArrayList<>();
@@ -111,7 +99,7 @@ public class LevelManager {
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
 
-                // Prazdne radky a komentare v souboru se preskakuji
+                // Empty lines and comments in the file are skipped
                 if (line.isEmpty() || line.startsWith("#")) {
                     continue;
                 }
@@ -129,11 +117,11 @@ public class LevelManager {
     }
 
     /**
-     * Otevre level soubor z resources nebo z dostupnych cest.
+     * Opens a level file from resources or from available paths.
      *
-     * @param fileName cesta k souboru levelu
-     * @return reader pro cteni souboru
-     * @throws IOException pokud soubor nelze najit nebo otevrit
+     * @param fileName path to the level file
+     * @return reader for reading the file
+     * @throws IOException if the file cannot be found or opened
      */
     private BufferedReader openLevelFile(String fileName) throws IOException {
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileName);
@@ -142,7 +130,7 @@ public class LevelManager {
             return new BufferedReader(new InputStreamReader(inputStream));
         }
 
-        // Pomocne cesty pro spousteni z ruznych adresaru
+        // Helper paths for running the game from different working directories
         String[] possiblePaths = {
                 fileName,
                 "SpaceMechanic_CP2/" + fileName,
@@ -166,10 +154,10 @@ public class LevelManager {
     }
 
     /**
-     * Vytvori herni objekt podle jednoho radku level souboru.
+     * Creates a game object from one line of the level file.
      *
-     * @param line radek z level souboru
-     * @return vytvoreny herni objekt
+     * @param line line from the level file
+     * @return created game object
      */
     private GameObject createObjectFromLine(String line) {
         String[] parts = line.split(",");
@@ -232,9 +220,9 @@ public class LevelManager {
     }
 
     /**
-     * Nastavi aktivni level a vychozi pozici hrace.
+     * Sets the active level and the default player position.
      *
-     * @param level cislo levelu
+     * @param level level number
      */
     public void loadLevel(int level) {
         objects.clear();
@@ -254,7 +242,7 @@ public class LevelManager {
     }
 
     /**
-     * Aktualizuje hrace, objekty a kontroluje kolize.
+     * Updates the player, objects and checks collisions.
      */
     public void update() {
         int oldX = player.getBounds().x;
@@ -268,7 +256,7 @@ public class LevelManager {
             }
         }
 
-        // Pri narazu do pevneho objektu se hrac vrati zpet
+        // When the player hits a solid object, the player is moved back
         if (isPlayerBlocked()) {
             player.setX(oldX);
             player.setY(oldY);
@@ -278,7 +266,7 @@ public class LevelManager {
     }
 
     /**
-     * Kontroluje, jestli hrac narazil do pevneho objektu.
+     * Checks whether the player collided with a solid object.
      */
     private boolean isPlayerBlocked() {
         for (GameObject object : objects) {
@@ -295,16 +283,16 @@ public class LevelManager {
     }
 
     /**
-     * Urcuje objekty, ktere blokuji pohyb.
+     * Defines objects that block movement.
      */
     private boolean isSolidObject(GameObject object) {
         return object instanceof Wall || object instanceof LockedDoor;
     }
 
     /**
-     * Vykresli pozadi levelu, hrace a aktivni objekty.
+     * Renders the level background, player and active objects.
      *
-     * @param g graficky kontext
+     * @param g graphics context
      */
     public void render(Graphics g) {
         drawShipBackground(g);
@@ -319,7 +307,7 @@ public class LevelManager {
     }
 
     /**
-     * Vykresli hlavni pozadi lodi.
+     * Renders the main ship background.
      */
     private void drawShipBackground(Graphics g) {
         int shipX = 370;
@@ -381,7 +369,7 @@ public class LevelManager {
     }
 
     /**
-     * Vykresli vesmirne pozadi.
+     * Renders the space background.
      */
     private void drawSpaceBackground(Graphics g) {
         g.setColor(new Color(7, 11, 20));
@@ -412,7 +400,7 @@ public class LevelManager {
     }
 
     /**
-     * Vykresli pruchody mezi mistnostmi.
+     * Renders passages between rooms.
      */
     private void drawCorridors(Graphics g) {
         g.setColor(new Color(58, 68, 84));
@@ -441,7 +429,7 @@ public class LevelManager {
     }
 
     /**
-     * Vykresli dekorace lodi.
+     * Renders ship decorations.
      */
     private void drawShipDecorations(Graphics g) {
         g.setColor(new Color(88, 98, 115));
@@ -466,7 +454,7 @@ public class LevelManager {
     }
 
     /**
-     * Vykresli detaily mistnosti podle aktualniho levelu.
+     * Renders room details according to the current level.
      */
     private void drawRoomDetails(Graphics g) {
         if (currentLevel == 1) {
@@ -604,7 +592,7 @@ public class LevelManager {
     }
 
     /**
-     * Zpracuje interakci hrace s nejblizsim objektem.
+     * Handles player interaction with the nearest object.
      */
     public void interactWithNearbyObject() {
         for (GameObject object : objects) {
@@ -648,9 +636,9 @@ public class LevelManager {
     }
 
     /**
-     * Pokusi se odemknout dvere pomoci modulu z inventare.
+     * Tries to unlock a door using a module from the inventory.
      *
-     * @param door zamcene dvere
+     * @param door locked door
      */
     private void unlockDoor(LockedDoor door) {
         if (!player.getInventory().containsItem(door.getRequiredModule())) {
@@ -675,10 +663,10 @@ public class LevelManager {
     }
 
     /**
-     * Zkontroluje, jestli je hrac dost blizko k objektu.
+     * Checks whether the player is close enough to an object.
      *
-     * @param object kontrolovany objekt
-     * @return true, pokud je objekt v dosahu interakce
+     * @param object checked object
+     * @return true if the object is within interaction range
      */
     private boolean isPlayerNear(GameObject object) {
         Rectangle playerBounds = player.getBounds();
@@ -694,7 +682,7 @@ public class LevelManager {
     }
 
     /**
-     * Prepne hrace do dalsiho levelu, pokud je splnen cil.
+     * Moves the player to the next level if the goal is completed.
      */
     private void switchLevel() {
         if (currentLevel == 1 && !levelOneObjectiveCompleted) {
@@ -710,10 +698,10 @@ public class LevelManager {
     }
 
     /**
-     * Pokusi se opravit objekt pomoci potrebne soucastky.
+     * Tries to repair an object using the required part.
      *
-     * @param repairable opravitelny objekt
-     * @param object objekt ve hre
+     * @param repairable repairable object
+     * @param object game object
      */
     private void repairObject(RepairableObject repairable, GameObject object) {
         String objectName = object.getClass().getSimpleName();
@@ -765,7 +753,7 @@ public class LevelManager {
     }
 
     /**
-     * Ulozi inventar hrace do textoveho souboru.
+     * Saves the player inventory into a text file.
      */
     public void saveInventoryToFile() {
         String fileName = "inventory_save.txt";
@@ -783,7 +771,7 @@ public class LevelManager {
     }
 
     /**
-     * Spusti crafting receptu podle aktualniho levelu.
+     * Runs the crafting recipe according to the current level.
      */
     public void craftCurrentLevelRecipe() {
         if (currentLevel == 1) {
@@ -794,11 +782,11 @@ public class LevelManager {
     }
 
     /**
-     * Vytvori novy predmet ze dvou soucastek v inventari.
+     * Creates a new item from two parts in the inventory.
      *
-     * @param firstItem prvni potrebny predmet
-     * @param secondItem druhy potrebny predmet
-     * @param resultItem vysledny predmet
+     * @param firstItem first required item
+     * @param secondItem second required item
+     * @param resultItem resulting item
      */
     private void craftItem(String firstItem, String secondItem, String resultItem) {
         boolean hasFirstItem = player.getInventory().containsItem(firstItem);
@@ -822,9 +810,9 @@ public class LevelManager {
     }
 
     /**
-     * Otevre bednu a prida nalezeny predmet do inventare.
+     * Opens a chest and adds the found item to the inventory.
      *
-     * @param chest bedna s predmetem
+     * @param chest chest with an item
      */
     private void openChest(Chest chest) {
         if (chest.isOpened()) {
@@ -846,7 +834,7 @@ public class LevelManager {
     }
 
     /**
-     * Vytvori typ predmetu podle nazvu z bedny.
+     * Creates an item type according to the chest item name.
      */
     private Item createInventoryItemForChest(String itemName) {
         if (itemName.equals("Wrench")) {
@@ -857,7 +845,7 @@ public class LevelManager {
     }
 
     /**
-     * Nacte ulozeny inventar ze souboru.
+     * Loads the saved inventory from a file.
      */
     public void loadInventoryFromFile() {
         String fileName = "inventory_save.txt";
@@ -885,86 +873,6 @@ public class LevelManager {
         } catch (IOException e) {
             lastMessage = "Could not load inventory.";
             System.err.println("Cannot load inventory: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Saves the basic game state to a text file.
-     */
-    public void saveGameState() {
-        Set<String> inventoryItems = new LinkedHashSet<>();
-        Set<String> repairedObjects = new LinkedHashSet<>();
-
-        for (Item item : player.getInventory().getItems()) {
-            inventoryItems.add(item.getName());
-        }
-
-        collectRepairedObjects(levelOneObjects, repairedObjects);
-        collectRepairedObjects(levelTwoObjects, repairedObjects);
-
-        saveManager.saveGame(
-                currentLevel,
-                player.getX(),
-                player.getY(),
-                inventoryItems,
-                repairedObjects
-        );
-
-        lastMessage = "Game state saved.";
-        log("Game state saved.");
-    }
-
-    /**
-     * Loads the basic game state from a text file.
-     */
-    public void loadGameState() {
-        SaveManager.SaveData saveData = saveManager.loadGame();
-
-        loadLevel(saveData.getCurrentLevel());
-        player.setX(saveData.getPlayerX());
-        player.setY(saveData.getPlayerY());
-
-        for (String itemName : saveData.getInventoryItems()) {
-            if (!player.getInventory().containsItem(itemName)) {
-                player.getInventory().addItem(createInventoryItemForChest(itemName));
-            }
-        }
-
-        applyRepairedObjects(levelOneObjects, saveData.getRepairedObjects());
-        applyRepairedObjects(levelTwoObjects, saveData.getRepairedObjects());
-
-        lastMessage = "Game state loaded.";
-        log("Game state loaded.");
-    }
-
-    private void collectRepairedObjects(List<GameObject> sourceObjects, Set<String> repairedObjects) {
-        for (GameObject object : sourceObjects) {
-            if (object instanceof RepairableObject repairable && repairable.isRepaired()) {
-                repairedObjects.add(getSaveObjectId(object));
-            }
-        }
-    }
-
-    private void applyRepairedObjects(List<GameObject> sourceObjects, Set<String> repairedObjects) {
-        for (GameObject object : sourceObjects) {
-            if (object instanceof RepairableObject repairable
-                    && repairedObjects.contains(getSaveObjectId(object))) {
-                repairable.forceRepair();
-            }
-        }
-    }
-
-    private String getSaveObjectId(GameObject object) {
-        return object.getClass().getSimpleName()
-                + ":"
-                + object.getX()
-                + ":"
-                + object.getY();
-    }
-
-    private void log(String message) {
-        if (LOGGING_ENABLED) {
-            LOGGER.info(message);
         }
     }
 }

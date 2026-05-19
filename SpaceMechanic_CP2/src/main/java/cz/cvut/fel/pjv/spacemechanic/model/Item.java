@@ -16,7 +16,7 @@ public abstract class Item extends GameObject {
 
     @Override
     public void update() {
-        // item se sam nehybe
+        // item does not move by itself
     }
 
     @Override

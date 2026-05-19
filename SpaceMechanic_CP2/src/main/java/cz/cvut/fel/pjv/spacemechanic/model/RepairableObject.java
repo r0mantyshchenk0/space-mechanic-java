@@ -3,8 +3,8 @@ package cz.cvut.fel.pjv.spacemechanic.model;
 import java.awt.Color;
 import java.awt.Graphics;
 /**
- * Zakladni trida pro objekty, ktere lze opravit.
- * Obsahuje potrebnou soucastku, stav opravy a postup opravy.
+ * Base class for objects that can be repaired.
+ * Stores the required part, repair state and repair progress.
  */
 public abstract class RepairableObject extends GameObject {
 
@@ -65,9 +65,9 @@ public abstract class RepairableObject extends GameObject {
         return className;
     }
     /**
-     * Pokusi se opravit objekt pomoci predmetu z inventare hrace.
+     * Tries to repair the object using an item from the player inventory.
      *
-     * @param player hrac, ktery objekt opravuje
+     * @param player player who repairs the object
      */
     public void repair(Player player) {
         // Do nothing if the object is already repaired
@@ -88,18 +88,18 @@ public abstract class RepairableObject extends GameObject {
             repaired = true;
         }
     }/**
-     * Vraci informaci, jestli je objekt opraveny.
+     * Returns whether the object is repaired.
      *
-     * @return true, pokud je objekt opraveny
+     * @return true if the object is repaired
      */
 
     public boolean isRepaired() {
         return repaired;
     }
     /**
-     * Vraci aktualni postup opravy.
+     * Returns the current repair progress.
      *
-     * @return postup opravy v procentech
+     * @return repair progress in percent
      */
     public int getRepairProgress() {
         return repairProgress;
@@ -107,14 +107,5 @@ public abstract class RepairableObject extends GameObject {
 
     public String getRequiredPart() {
         return requiredPart;
-    }
-
-    /**
-     * Marks the object as fully repaired.
-     * This method is used when loading a saved game state.
-     */
-    public void forceRepair() {
-        this.repaired = true;
-        this.repairProgress = 100;
     }
 }

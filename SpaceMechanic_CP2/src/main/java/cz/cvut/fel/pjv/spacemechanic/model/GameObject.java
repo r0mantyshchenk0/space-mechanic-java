@@ -19,19 +19,19 @@ public abstract class GameObject {
         this.active = true;
     }
     /**
-     * Aktualizuje stav objektu.
+     * Updates the object state.
      */
     public abstract void update();
     /**
-     * Vykresli objekt na obrazovku.
+     * Renders the object on the screen.
      *
-     * @param g graficky kontext
+     * @param g graphics context
      */
     public abstract void render(Graphics g);
     /**
-     * Vraci obdelnik pouzivany pro kontrolu kolizi.
+     * Returns the rectangle used for collision checks.
      *
-     * @return hranice objektu
+     * @return object bounds
      */
     public Rectangle getBounds() {
         return new Rectangle(x, y, width, height);
