@@ -31,3 +31,6 @@ sources.txt
 inventory_save.txt
 *.class
 *.zip
+
+savegame.txt
+../savegame.txt
