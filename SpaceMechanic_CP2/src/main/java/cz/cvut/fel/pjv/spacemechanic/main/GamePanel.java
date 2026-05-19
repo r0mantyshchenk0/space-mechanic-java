@@ -1,4 +1,4 @@
-﻿package cz.cvut.fel.pjv.spacemechanic.main;
+package cz.cvut.fel.pjv.spacemechanic.main;
 
 import cz.cvut.fel.pjv.spacemechanic.input.InputHandler;
 

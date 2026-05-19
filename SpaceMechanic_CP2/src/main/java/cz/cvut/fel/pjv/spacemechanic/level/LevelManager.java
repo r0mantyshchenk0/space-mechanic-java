@@ -15,7 +15,11 @@ import cz.cvut.fel.pjv.spacemechanic.model.ShipTerminal;
 import cz.cvut.fel.pjv.spacemechanic.model.SparePart;
 import cz.cvut.fel.pjv.spacemechanic.model.ToolItem;
 import cz.cvut.fel.pjv.spacemechanic.model.Wall;
+import cz.cvut.fel.pjv.spacemechanic.save.SaveManager;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.logging.Logger;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -37,6 +41,14 @@ import java.util.List;
 public class LevelManager {
 
     private int currentLevel;
+
+    private static final Logger LOGGER =
+            Logger.getLogger(LevelManager.class.getName());
+
+    private static final boolean LOGGING_ENABLED =
+            Boolean.parseBoolean(System.getProperty("logging", "true"));
+
+    private final SaveManager saveManager = new SaveManager();
 
     private final List<GameObject> objects;
     private final List<GameObject> levelOneObjects;
@@ -873,6 +885,86 @@ public class LevelManager {
         } catch (IOException e) {
             lastMessage = "Could not load inventory.";
             System.err.println("Cannot load inventory: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Saves the basic game state to a text file.
+     */
+    public void saveGameState() {
+        Set<String> inventoryItems = new LinkedHashSet<>();
+        Set<String> repairedObjects = new LinkedHashSet<>();
+
+        for (Item item : player.getInventory().getItems()) {
+            inventoryItems.add(item.getName());
+        }
+
+        collectRepairedObjects(levelOneObjects, repairedObjects);
+        collectRepairedObjects(levelTwoObjects, repairedObjects);
+
+        saveManager.saveGame(
+                currentLevel,
+                player.getX(),
+                player.getY(),
+                inventoryItems,
+                repairedObjects
+        );
+
+        lastMessage = "Game state saved.";
+        log("Game state saved.");
+    }
+
+    /**
+     * Loads the basic game state from a text file.
+     */
+    public void loadGameState() {
+        SaveManager.SaveData saveData = saveManager.loadGame();
+
+        loadLevel(saveData.getCurrentLevel());
+        player.setX(saveData.getPlayerX());
+        player.setY(saveData.getPlayerY());
+
+        for (String itemName : saveData.getInventoryItems()) {
+            if (!player.getInventory().containsItem(itemName)) {
+                player.getInventory().addItem(createInventoryItemForChest(itemName));
+            }
+        }
+
+        applyRepairedObjects(levelOneObjects, saveData.getRepairedObjects());
+        applyRepairedObjects(levelTwoObjects, saveData.getRepairedObjects());
+
+        lastMessage = "Game state loaded.";
+        log("Game state loaded.");
+    }
+
+    private void collectRepairedObjects(List<GameObject> sourceObjects, Set<String> repairedObjects) {
+        for (GameObject object : sourceObjects) {
+            if (object instanceof RepairableObject repairable && repairable.isRepaired()) {
+                repairedObjects.add(getSaveObjectId(object));
+            }
+        }
+    }
+
+    private void applyRepairedObjects(List<GameObject> sourceObjects, Set<String> repairedObjects) {
+        for (GameObject object : sourceObjects) {
+            if (object instanceof RepairableObject repairable
+                    && repairedObjects.contains(getSaveObjectId(object))) {
+                repairable.forceRepair();
+            }
+        }
+    }
+
+    private String getSaveObjectId(GameObject object) {
+        return object.getClass().getSimpleName()
+                + ":"
+                + object.getX()
+                + ":"
+                + object.getY();
+    }
+
+    private void log(String message) {
+        if (LOGGING_ENABLED) {
+            LOGGER.info(message);
         }
     }
 }

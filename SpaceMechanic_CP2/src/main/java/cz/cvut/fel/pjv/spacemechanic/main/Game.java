@@ -6,13 +6,19 @@ import cz.cvut.fel.pjv.spacemechanic.ui.UIManager;
 
 import javax.swing.JFrame;
 import java.awt.Graphics;
-
+import java.util.logging.Logger;
 
 /**
- * Hlavni trida hry.
- * Inicializuje hlavni herni komponenty a ridi aktualni stav hry.
+ * Main game class.
+ * Initializes the main game components and controls the current game state.
  */
 public class Game {
+
+    private static final Logger LOGGER =
+            Logger.getLogger(Game.class.getName());
+
+    private static final boolean LOGGING_ENABLED =
+            Boolean.parseBoolean(System.getProperty("logging", "true"));
 
     private GameState currentState;
     private final GamePanel gamePanel;
@@ -21,7 +27,7 @@ public class Game {
     private final InputHandler inputHandler;
 
     /**
-     * Vytvori zakladni objekty hry a propoji herni logiku s UI.
+     * Creates the main game objects and connects the game logic with the UI.
      */
     public Game() {
         this.currentState = GameState.MENU;
@@ -29,9 +35,12 @@ public class Game {
         this.uiManager = new UIManager(this);
         this.inputHandler = new InputHandler(this);
         this.gamePanel = new GamePanel(this, inputHandler);
+
+        log("Game initialized.");
     }
+
     /**
-     * Vytvori hlavni okno hry a spusti herni smycku.
+     * Creates the main game window and starts the game loop.
      */
     public void start() {
         JFrame frame = new JFrame("Space Mechanic");
@@ -44,17 +53,13 @@ public class Game {
 
         gamePanel.startGameLoop();
 
-
-
-        frame.setVisible(true);
-
-        gamePanel.startGameLoop();
+        log("Game window created and game loop started.");
     }
 
     /**
-     * Aktualizuje herni logiku podle aktualniho stavu hry.
+     * Updates the game logic according to the current game state.
      */
-    public void update()  {
+    public void update() {
         if (currentState == GameState.PLAYING) {
             levelManager.update();
 
@@ -69,9 +74,9 @@ public class Game {
     }
 
     /**
-     * Vykresli aktualni level a uzivatelske rozhrani.
+     * Renders the current level and the user interface.
      *
-     * @param g graficky kontext
+     * @param g graphics context
      */
     public void render(Graphics g) {
         levelManager.render(g);
@@ -79,12 +84,35 @@ public class Game {
     }
 
     /**
-     * Zmeni aktualni stav hry.
+     * Changes the current game state.
      *
-     * @param newState novy stav hry
+     * @param newState new game state
      */
     public void changeState(GameState newState) {
         this.currentState = newState;
+        log("Game state changed to: " + newState);
+    }
+
+    /**
+     * Saves the current game state.
+     */
+    public void saveGameState() {
+        levelManager.saveGameState();
+        log("Game state saved.");
+    }
+
+    /**
+     * Loads the previously saved game state.
+     */
+    public void loadGameState() {
+        levelManager.loadGameState();
+        log("Game state loaded.");
+    }
+
+    private static void log(String message) {
+        if (LOGGING_ENABLED) {
+            LOGGER.info(message);
+        }
     }
 
     public GameState getCurrentState() {

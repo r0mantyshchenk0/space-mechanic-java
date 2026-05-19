@@ -62,6 +62,8 @@ public class InputHandler implements KeyListener {
             case KeyEvent.VK_S -> player.setMovingDown(true);
             case KeyEvent.VK_A -> player.setMovingLeft(true);
             case KeyEvent.VK_D -> player.setMovingRight(true);
+            case KeyEvent.VK_F5 -> game.saveGameState();
+            case KeyEvent.VK_F9 -> game.loadGameState();
 
             // Interakce s objektem pobliz hrace
             case KeyEvent.VK_E -> game.getLevelManager().interactWithNearbyObject();

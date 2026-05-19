@@ -108,4 +108,13 @@ public abstract class RepairableObject extends GameObject {
     public String getRequiredPart() {
         return requiredPart;
     }
+
+    /**
+     * Marks the object as fully repaired.
+     * This method is used when loading a saved game state.
+     */
+    public void forceRepair() {
+        this.repaired = true;
+        this.repairProgress = 100;
+    }
 }
