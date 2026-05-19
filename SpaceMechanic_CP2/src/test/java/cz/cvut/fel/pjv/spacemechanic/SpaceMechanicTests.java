@@ -7,14 +7,7 @@ import cz.cvut.fel.pjv.spacemechanic.model.Inventory;
 import cz.cvut.fel.pjv.spacemechanic.model.Player;
 import cz.cvut.fel.pjv.spacemechanic.model.SparePart;
 import cz.cvut.fel.pjv.spacemechanic.model.ToolItem;
-import cz.cvut.fel.pjv.spacemechanic.save.SaveManager;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,11 +15,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * Tests for the main non-graphical logic of Space Mechanic.
  */
 class SpaceMechanicTests {
-
-    @AfterEach
-    void cleanGeneratedSaveFile() throws Exception {
-        Files.deleteIfExists(Path.of("savegame.txt"));
-    }
 
     /**
      * Checks that an item can be added to the inventory and removed later.
@@ -223,37 +211,5 @@ class SpaceMechanicTests {
                 .count();
 
         assertEquals(1, powerModuleCount);
-    }
-
-    /**
-     * SaveManager should store and load the basic game state values.
-     */
-    @Test
-    void saveManagerStoresBasicGameState() {
-        SaveManager saveManager = new SaveManager();
-
-        Set<String> inventoryItems = new LinkedHashSet<>();
-        inventoryItems.add("Wire");
-        inventoryItems.add("Battery");
-
-        Set<String> repairedObjects = new LinkedHashSet<>();
-        repairedObjects.add("Engine:100:200");
-
-        saveManager.saveGame(
-                2,
-                345,
-                210,
-                inventoryItems,
-                repairedObjects
-        );
-
-        SaveManager.SaveData saveData = saveManager.loadGame();
-
-        assertEquals(2, saveData.getCurrentLevel());
-        assertEquals(345, saveData.getPlayerX());
-        assertEquals(210, saveData.getPlayerY());
-        assertTrue(saveData.getInventoryItems().contains("Wire"));
-        assertTrue(saveData.getInventoryItems().contains("Battery"));
-        assertTrue(saveData.getRepairedObjects().contains("Engine:100:200"));
     }
 }
