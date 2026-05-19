@@ -1,343 +1,284 @@
 # Space Mechanic
 
-**Space Mechanic** je jednoduchá 2D hra vytvořená jako semestrální projekt v Javě.
+**Space Mechanic** is a simple 2D game created as a semestral project in Java.
 
-Hra se odehrává na poškozené vesmírné stanici. Hráč ovládá technika, který musí projít dvě části stanice, sbírat součástky, vyrábět opravné moduly, odstraňovat překážky a nakonec opravit hlavní systém stanice.
+The game takes place on a damaged spaceship. The player controls a mechanic who moves through two parts of the ship, collects items, crafts repair modules, unlocks obstacles and repairs important ship systems.
 
-## Cíl hry
+## Game goal
 
-Hra má dva levely:
+The game contains two levels.
 
 ### Level 1 - Engineering Deck
 
-Cílem prvního levelu je vyrobit **Power Module**.
-
-Potřebné součástky:
-
-- Wire
-- Battery
-
-Recept:
+The goal of the first level is to create the **Power Module**.
 
 ```text
 Wire + Battery -> Power Module
 ```
 
-Po vytvoření modulu může hráč odemknout zablokovaný panel a aktivovat výtah do druhého levelu.
+After creating the module, the player can unlock the obstacle and activate the elevator to the second level.
 
 ### Level 2 - Control Deck
 
-Cílem druhého levelu je vyrobit **Engine Core**.
-
-Potřebné součástky:
-
-- Metal Plate
-- Fuel Cell
-
-Recept:
+The goal of the second level is to create the **Engine Core**.
 
 ```text
 Metal Plate + Fuel Cell -> Engine Core
 ```
 
-Po vytvoření Engine Core hráč odstraní finální překážku a dokončí hru.
+After creating the Engine Core, the player can remove the final obstacle and finish the game.
 
-## Ovládání
+## Controls
 
-| Klávesa | Akce |
+| Key | Action |
 |---|---|
-| W | Pohyb nahoru |
-| A | Pohyb doleva |
-| S | Pohyb dolů |
-| D | Pohyb doprava |
-| E | Interakce s objektem |
-| I | Zobrazení / skrytí inventáře |
-| C | Zobrazení / skrytí crafting menu |
-| ENTER | Vytvoření předmětu v crafting menu |
-| ESC | Pauza / pokračování |
+| W, A, S, D | Move player |
+| E | Interact with object |
+| I | Show / hide inventory |
+| C | Show / hide crafting menu |
+| ENTER | Craft item in crafting menu |
+| ESC | Pause / continue |
+| F5 | Save game state |
+| F9 | Load game state |
 
-## Herní mechaniky
+## Game mechanics
 
-### Inventář
+The game contains the main mechanics needed to complete both levels:
 
-Hráč má inventář, do kterého se ukládají sebrané předměty a vyrobené moduly.
+- player movement
+- collisions with walls and locked doors
+- item collection
+- inventory
+- crafting
+- chests with items
+- terminal with hints
+- repairable objects
+- elevator between levels
+- HUD with player information
+- pause and win screens
+- saving and loading game state
+- basic logging of important events
 
-Inventář lze zobrazit pomocí klávesy `I`.
+The inventory is empty when starting a new game, so the player has to complete the game flow from the beginning.
 
-Při nové hře je inventář prázdný, aby hráč musel projít herní postup od začátku.
+## Saving and loading
 
-### Sběr předmětů
+The game can save and load the basic game state.
 
-Součástky jsou rozmístěné v mapě jako interaktivní objekty nebo jsou uložené v bednách.
-
-Hráč s objekty interaguje pomocí klávesy `E`.
-
-Po sebrání se předmět přidá do inventáře.
-
-Příklady předmětů:
-
-- Wire
-- Battery
-- Metal Plate
-- Fuel Cell
-- Wrench
-
-### Crafting
-
-Crafting menu se otevírá pomocí klávesy `C`.
-
-Samotné vytvoření předmětu se provádí klávesou `ENTER`, pokud je crafting menu otevřené.
-
-Každý level má vlastní recept:
+Saving is done with:
 
 ```text
-Level 1: Wire + Battery -> Power Module
-Level 2: Metal Plate + Fuel Cell -> Engine Core
+F5
 ```
 
-Pokud hráč nemá potřebné součástky, hra zobrazí zprávu v HUD panelu.
-
-### Překážky a zamčené dveře
-
-Ve hře existují překážky a zamčené dveře.
-
-Zamčené dveře blokují přístup do důležité části levelu.
-
-Hráč je může odstranit pouze pomocí správného vyrobeného modulu.
-
-Příklad:
+Loading is done with:
 
 ```text
-Power Module -> odemkne překážku v Levelu 1
-Engine Core -> odemkne finální překážku v Levelu 2
+F9
 ```
 
-### Výtah
+The save file is called:
 
-Výtah slouží k přechodu mezi levely.
+```text
+savegame.txt
+```
 
-V Levelu 1 je výtah uzamčený, dokud hráč nesplní cíl levelu.
+The saved state contains:
 
-Po použití Power Module se výtah aktivuje a hráč může přejít do Levelu 2.
+- current level
+- player position
+- inventory items
+- repaired objects
 
-### Terminál
+Saving and loading are handled by the `SaveManager` class.
 
-Ve hře je také lodní terminál.
+## External level files
 
-Hráč s ním může interagovat pomocí klávesy `E`.
-
-Terminál zobrazuje nápovědu, která je definovaná v externím level souboru.
-
-### Opravitelné objekty
-
-Některé objekty ve hře lze opravit pomocí správné součástky.
-
-Oprava probíhá postupně a její stav je vidět v HUD panelu.
-
-## Externí level soubory
-
-Levely jsou načítány z externích textových souborů:
+Levels are loaded from external text files:
 
 ```text
 src/main/resources/levels/level1.txt
 src/main/resources/levels/level2.txt
 ```
 
-Každý řádek souboru popisuje jeden objekt v levelu.
-
-Příklad:
-
-```text
-SPARE_PART,455,210,24,24,Wire
-LOCKED_DOOR,895,205,40,70,Power Module
-ELEVATOR,745,250,45,60
-TERMINAL,990,190,36,36,Hint: craft Power Module from Wire and Battery.
-```
-
-Obecný formát:
+Each line describes one object in this format:
 
 ```text
 TYPE,x,y,width,height,extra
 ```
 
-Podporované typy objektů:
+Example:
 
-| Typ | Význam |
+```text
+CHEST,500,300,40,40,Wire
+LOCKED_DOOR,895,205,40,70,Power Module
+ELEVATOR,745,250,45,60
+```
+
+Supported object types:
+
+| Type | Meaning |
 |---|---|
-| SPARE_PART | Sebratelná součástka |
-| TOOL | Sebratelný nástroj |
-| WALL | Neviditelná kolizní překážka |
-| LOCKED_DOOR | Zamčená překážka |
-| ELEVATOR | Přechod mezi levely |
-| TERMINAL | Terminál s nápovědou |
-| ENGINE | Opravitelný systém |
-| GENERATOR | Opravitelný systém |
-| DOOR | Opravitelný dveřní systém |
-| CHEST | Bedna s předmětem |
+| SPARE_PART | Collectible spare part |
+| TOOL | Collectible tool |
+| CHEST | Chest with an item |
+| WALL | Collision obstacle |
+| LOCKED_DOOR | Locked obstacle |
+| ELEVATOR | Transition between levels |
+| TERMINAL | Terminal with a hint |
+| ENGINE | Repairable system |
+| GENERATOR | Repairable system |
+| DOOR | Repairable door system |
 
-## Struktura projektu
+## Project structure
 
-Projekt je rozdělen do několika balíčků:
+The project is divided into several packages:
 
 ```text
 cz.cvut.fel.pjv.spacemechanic
 ```
 
-| Balíček | Popis |
+| Package | Description |
 |---|---|
-| main | Spuštění hry, herní smyčka, stav hry |
-| input | Zpracování klávesnice |
-| level | Načítání levelů, správa objektů, přepínání levelů |
-| model | Herní objekty, hráč, inventář, dveře, výtah, terminál |
-| collision | Kolize mezi hráčem a objekty |
-| ui | HUD, menu, inventář, crafting, pause screen, win screen |
+| main | Game startup, game loop and game state |
+| input | Keyboard input handling |
+| level | Level loading and game logic management |
+| model | Game objects, player, inventory and items |
+| collision | Collision detection |
+| ui | HUD, inventory, crafting menu and game screens |
+| save | Saving and loading game state |
 
-## Důležité třídy
+## Technical documentation
 
-### Game
+The project is written in Java 21 and uses Maven.
 
-Hlavní třída hry.
+The graphical part is implemented with Swing / Java AWT.
 
-Obsahuje aktuální stav hry, `LevelManager`, `InputHandler`, `GamePanel` a `UIManager`.
+Main classes:
 
-### GamePanel
+- `Game` initializes the main parts of the game and stores the current game state.
+- `GamePanel` contains the game loop and regular rendering.
+- `InputHandler` handles keyboard input.
+- `LevelManager` manages levels, objects, interactions, crafting, repairs and the win condition.
+- `UIManager` renders the HUD, inventory, crafting menu, pause screen and win screen.
+- `Inventory` stores items collected by the player.
+- `CollisionManager` checks collisions between the player and objects.
+- `SaveManager` saves and loads the basic game state.
 
-Swing panel, který spouští herní smyčku a vykresluje hru.
+The base class for most objects in the game is `GameObject`. Specific objects such as `Chest`, `Wall`, `Elevator`, `LockedDoor`, `Item` and `RepairableObject` are based on it.
 
-### LevelManager
+`RepairableObject` is a common base class for objects that can be repaired, for example `Engine`, `Generator` and `DoorSystem`.
 
-Spravuje aktuální level, hráče a seznam objektů.
+## Threads
 
-Načítá levely z externích souborů, řeší interakce, crafting, výtah, překážky, opravy a podmínku výhry.
+The game loop runs in a separate thread inside `GamePanel`.
 
-### InputHandler
+The loop regularly updates the game logic and repaints the game panel.
 
-Zpracovává vstup z klávesnice.
+## Logging
 
-Řeší pohyb hráče, interakci, inventář, crafting menu a pauzu.
+Logging is implemented using:
 
-### Player
+```java
+java.util.logging.Logger
+```
 
-Reprezentuje hráče.
+The game logs important events such as:
 
-Obsahuje pohyb, pozici, životy, inventář a vykreslení hráče.
+- game initialization
+- game state changes
+- saving game state
+- loading game state
 
-### Inventory
+Logging can be disabled with the launch parameter:
 
-Ukládá sebrané předměty a vyrobené moduly.
+```text
+-Dlogging=false
+```
 
-### Item, SparePart, ToolItem
+## JavaDoc
 
-Třídy pro sebratelné předměty.
+The source code contains JavaDoc comments for main classes and important methods.
 
-### Chest
+JavaDoc comments are mainly added to parts that contain the basic logic of the project:
 
-Bedna, ze které hráč může získat předmět.
+- main game classes
+- level management
+- keyboard input
+- user interface
+- inventory
+- collisions
+- repairable objects
+- saving and loading
+- tests
 
-### RepairableObject
-
-Společný základ pro objekty, které lze ve hře opravit.
-
-### LockedDoor
-
-Překážka, kterou lze odstranit pouze pomocí správného modulu.
-
-### Elevator
-
-Objekt pro přechod mezi levely.
-
-### ShipTerminal
-
-Terminál, který zobrazuje hráči nápovědu.
-
-### UIManager
-
-Vykresluje uživatelské rozhraní, inventář, crafting menu, zprávy, stav oprav a obrazovky hry.
-
-## Jak spustit projekt
-
-Projekt je Maven projekt.
-
-Nejdříve je potřeba otevřít složku, ve které se nachází soubor `pom.xml`.
-
-Spuštění hry přes Maven:
+HTML documentation was not generated as part of the submission, because it was not required. It can still be generated using Maven:
 
 ```bash
-mvn exec:java
+mvn javadoc:javadoc
 ```
 
-Projekt lze také spustit přímo v IntelliJ IDEA spuštěním hlavní třídy:
+## Tests
 
-```text
-cz.cvut.fel.pjv.spacemechanic.main.Game
-```
+The project contains unit tests using JUnit 5.
 
-Projekt používá Java Swing pro grafické rozhraní.
+The tests check:
 
-## Testy
+- inventory add/remove logic
+- item collection
+- tool collection
+- object repair
+- level loading
+- crafting in the first level
+- crafting in the second level
+- crafting without required items
+- initial level manager state
 
-Projekt obsahuje jednotkové testy pomocí JUnit 5.
-
-Testy jsou uložené zde:
-
-```text
-src/test/java/cz/cvut/fel/pjv/spacemechanic/SpaceMechanicTests.java
-```
-
-Testy ověřují:
-
-- práci s inventářem,
-- sběr součástky,
-- sběr nástroje,
-- opravu objektu bez potřebné součástky,
-- opravu objektu se správnou součástkou,
-- načítání levelů,
-- crafting v prvním levelu,
-- crafting ve druhém levelu.
-
-Spuštění testů:
+Run tests with:
 
 ```bash
 mvn test
 ```
 
-Poslední výsledek testů:
+The graphical part is tested manually, because rendering and keyboard interaction are not suitable for simple unit tests.
 
-```text
-Tests run: 8, Failures: 0, Errors: 0, Skipped: 0
-BUILD SUCCESS
+## Network communication
+
+The project does not use network communication. The game runs locally as a desktop application and does not contain a client-server architecture.
+
+Because of that, no communication protocol is needed.
+
+## Running the project
+
+The project is a Maven project.
+
+First, open the folder that contains `pom.xml`.
+
+Run the game:
+
+```bash
+mvn exec:java
 ```
 
-## Implementované funkce
+Run tests:
 
-- 2D herní smyčka
-- Pohyb hráče
-- GUI / HUD
-- Inventář
-- Inventory panel
-- Sběr předmětů
-- Crafting menu
-- Crafting systém
-- Zamčené dveře
-- Kolizní překážky
-- Výtah mezi levely
-- Dva levely
-- Načítání levelů z externích souborů
-- Terminál s nápovědou
-- Opravitelné objekty
-- Stav oprav v HUD
-- Pauza
-- Stav výhry
-- Maven konfigurace
-- JUnit testy
+```bash
+mvn test
+```
 
-## Stav projektu
+The project can also be started directly in IntelliJ IDEA by running the main class:
 
-Hra je funkční a obsahuje kompletní základní herní průchod.
+```text
+cz.cvut.fel.pjv.spacemechanic.main.Game
+```
 
-Hráč může projít první level, vytvořit Power Module, odemknout cestu k výtahu, přejít do druhého levelu, vytvořit Engine Core a dokončit hru.
+## Project status
 
-## Autor
+The game is functional and contains a complete basic playthrough.
+
+The player can complete the first level, create the Power Module, unlock the way to the elevator, move to the second level, create the Engine Core and finish the game.
+
+## Author
 
 Roman Tyshchenko  
-ČVUT FEL
+CTU FEE
