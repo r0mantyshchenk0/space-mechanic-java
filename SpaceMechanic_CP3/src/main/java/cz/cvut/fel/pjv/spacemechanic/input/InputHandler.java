@@ -6,12 +6,15 @@ import cz.cvut.fel.pjv.spacemechanic.model.Player;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.logging.Logger;
 
 /**
  * Handles keyboard input.
  * Passes actions to the game, level manager and UI manager.
  */
 public class InputHandler implements KeyListener {
+
+    private static final Logger LOGGER = Logger.getLogger(InputHandler.class.getName());
 
     private final Game game;
 
@@ -28,6 +31,7 @@ public class InputHandler implements KeyListener {
     public void keyPressed(KeyEvent e) {
         // Any key in the menu starts the game
         if (game.getCurrentState() == GameState.MENU) {
+            LOGGER.info("Start key pressed. Leaving menu.");
             game.changeState(GameState.PLAYING);
             return;
         }
@@ -39,8 +43,10 @@ public class InputHandler implements KeyListener {
          */
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             if (game.getCurrentState() == GameState.PLAYING) {
+                LOGGER.info("Pause requested by ESC.");
                 game.changeState(GameState.PAUSED);
             } else if (game.getCurrentState() == GameState.PAUSED) {
+                LOGGER.info("Resume requested by ESC.");
                 game.changeState(GameState.PLAYING);
             }
             return;
@@ -54,6 +60,7 @@ public class InputHandler implements KeyListener {
         Player player = game.getLevelManager().getPlayer();
 
         if (player == null) {
+            LOGGER.warning("Input ignored because player is not available.");
             return;
         }
 
@@ -64,17 +71,27 @@ public class InputHandler implements KeyListener {
             case KeyEvent.VK_D -> player.setMovingRight(true);
 
             // Interaction with an object near the player
-            case KeyEvent.VK_E -> game.getLevelManager().interactWithNearbyObject();
+            case KeyEvent.VK_E -> {
+                LOGGER.info("Interaction key pressed.");
+                game.getLevelManager().interactWithNearbyObject();
+            }
 
             // Show or hide the inventory
-            case KeyEvent.VK_I -> game.getUiManager().toggleInventory();
+            case KeyEvent.VK_I -> {
+                LOGGER.info("Inventory toggle key pressed.");
+                game.getUiManager().toggleInventory();
+            }
 
             // Show or hide the crafting menu
-            case KeyEvent.VK_C -> game.getUiManager().toggleCraftingMenu();
+            case KeyEvent.VK_C -> {
+                LOGGER.info("Crafting menu toggle key pressed.");
+                game.getUiManager().toggleCraftingMenu();
+            }
 
             // Crafting is performed only when the crafting menu is open
             case KeyEvent.VK_ENTER -> {
                 if (game.getUiManager().isCraftingMenuVisible()) {
+                    LOGGER.info("Crafting confirmed by ENTER.");
                     game.getLevelManager().craftCurrentLevelRecipe();
                 }
             }

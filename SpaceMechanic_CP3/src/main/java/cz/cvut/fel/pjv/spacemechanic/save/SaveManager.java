@@ -105,6 +105,7 @@ public class SaveManager {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
+            LOGGER.warning("Invalid number in save file: " + value + ". Using default: " + defaultValue);
             return defaultValue;
         }
     }

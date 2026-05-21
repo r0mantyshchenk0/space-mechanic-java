@@ -2,11 +2,14 @@ package cz.cvut.fel.pjv.spacemechanic.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 /**
  * Player inventory.
  * Stores collected items and crafted modules.
  */
 public class Inventory {
+
+    private static final Logger LOGGER = Logger.getLogger(Inventory.class.getName());
 
     private final List<Item> items;
 
@@ -20,6 +23,7 @@ public class Inventory {
      */
     public void addItem(Item item) {
         items.add(item);
+        LOGGER.info("Inventory item added: " + item.getName() + ".");
     }
     /**
      * Removes the first item with the given name.
@@ -27,7 +31,9 @@ public class Inventory {
      * @param itemName name of the item
      */
     public void removeItem(Item item) {
-        items.remove(item);
+        if (items.remove(item)) {
+            LOGGER.info("Inventory item removed: " + item.getName() + ".");
+        }
     }
     /**
      * Removes the first item with the given name.

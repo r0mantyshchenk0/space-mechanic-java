@@ -1,9 +1,13 @@
 package cz.cvut.fel.pjv.spacemechanic.model;
 
+import java.util.logging.Logger;
+
 import java.awt.Color;
 import java.awt.Graphics;
 
 public class Chest extends GameObject {
+
+    private static final Logger LOGGER = Logger.getLogger(Chest.class.getName());
 
     private final String itemName;
     private boolean opened;
@@ -63,5 +67,6 @@ public class Chest extends GameObject {
 
     public void open() {
         opened = true;
+        LOGGER.info("Chest opened. Item: " + itemName + ".");
     }
 }

@@ -29,12 +29,15 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Manages levels, objects, player and the main game logic.
  * Handles level loading, interactions, crafting, repairs and winning.
  */
 public class LevelManager {
+
+    private static final Logger LOGGER = Logger.getLogger(LevelManager.class.getName());
 
     private int currentLevel;
 
@@ -53,6 +56,7 @@ public class LevelManager {
      * Creates the level manager, loads levels and sets the first level.
      */
     public LevelManager() {
+        LOGGER.info("Creating level manager.");
         this.currentLevel = 1;
 
         this.objects = new ArrayList<>();
@@ -70,17 +74,23 @@ public class LevelManager {
 
         createLevels();
         loadLevel(1);
+        LOGGER.info("Level manager initialized.");
     }
 
     /**
      * Loads objects for both levels from external files.
      */
     private void createLevels() {
+        LOGGER.info("Loading all level definitions.");
+
         levelOneObjects.clear();
         levelTwoObjects.clear();
 
         levelOneObjects.addAll(loadObjectsFromFile("levels/level1.txt"));
         levelTwoObjects.addAll(loadObjectsFromFile("levels/level2.txt"));
+
+        LOGGER.info("Level definitions loaded. Level 1 objects: "
+                + levelOneObjects.size() + ", level 2 objects: " + levelTwoObjects.size() + ".");
     }
 
     /**
@@ -90,6 +100,7 @@ public class LevelManager {
      * @return list of loaded game objects
      */
     private List<GameObject> loadObjectsFromFile(String fileName) {
+        LOGGER.info("Loading objects from file: " + fileName);
         List<GameObject> loadedObjects = new ArrayList<>();
 
         try {
@@ -110,9 +121,11 @@ public class LevelManager {
 
             reader.close();
         } catch (IOException e) {
+            LOGGER.severe("Cannot load level file: " + fileName + ". " + e.getMessage());
             throw new IllegalStateException("Cannot load level file: " + fileName, e);
         }
 
+        LOGGER.info("Loaded " + loadedObjects.size() + " objects from " + fileName + ".");
         return loadedObjects;
     }
 
@@ -127,6 +140,7 @@ public class LevelManager {
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileName);
 
         if (inputStream != null) {
+            LOGGER.info("Level file found in resources: " + fileName);
             return new BufferedReader(new InputStreamReader(inputStream));
         }
 
@@ -146,10 +160,12 @@ public class LevelManager {
             File file = new File(path);
 
             if (file.exists()) {
+                LOGGER.info("Level file found on disk: " + path);
                 return new BufferedReader(new FileReader(file));
             }
         }
 
+        LOGGER.severe("Level file not found: " + fileName);
         throw new IOException("Level file not found: " + fileName);
     }
 
@@ -225,6 +241,7 @@ public class LevelManager {
      * @param level level number
      */
     public void loadLevel(int level) {
+        LOGGER.info("Loading level " + level + ".");
         objects.clear();
         currentLevel = level;
 
@@ -233,11 +250,15 @@ public class LevelManager {
             player.setX(500);
             player.setY(220);
             lastMessage = "Level 1: Engineering Deck.";
+            LOGGER.info("Level 1 loaded. Player position: 500,220.");
         } else if (level == 2) {
             objects.addAll(levelTwoObjects);
             player.setX(500);
             player.setY(420);
             lastMessage = "Level 2: Control Deck.";
+            LOGGER.info("Level 2 loaded. Player position: 500,420.");
+        } else {
+            LOGGER.warning("Unknown level requested: " + level);
         }
     }
 
@@ -260,6 +281,7 @@ public class LevelManager {
         if (isPlayerBlocked()) {
             player.setX(oldX);
             player.setY(oldY);
+            LOGGER.fine("Player movement blocked by a solid object.");
         }
 
         collisionManager.checkCollisions(player, objects);
@@ -597,6 +619,7 @@ public class LevelManager {
     public void interactWithNearbyObject() {
         for (GameObject object : objects) {
             if (object.isActive() && object instanceof Elevator && isPlayerNear(object)) {
+                LOGGER.info("Player is interacting with elevator.");
                 switchLevel();
                 return;
             }
@@ -604,6 +627,7 @@ public class LevelManager {
 
         for (GameObject object : objects) {
             if (object.isActive() && object instanceof ShipTerminal terminal && isPlayerNear(object)) {
+                LOGGER.info("Player is reading ship terminal.");
                 lastMessage = terminal.getHint();
                 return;
             }
@@ -611,6 +635,7 @@ public class LevelManager {
 
         for (GameObject object : objects) {
             if (object.isActive() && object instanceof LockedDoor door && isPlayerNear(object)) {
+                LOGGER.info("Player is interacting with locked door requiring " + door.getRequiredModule() + ".");
                 unlockDoor(door);
                 return;
             }
@@ -620,6 +645,7 @@ public class LevelManager {
             if (object.isActive() && object instanceof Chest chest
                     && !chest.isOpened()
                     && isPlayerNear(object)) {
+                LOGGER.info("Player is opening chest with item: " + chest.getItemName() + ".");
                 openChest(chest);
                 return;
             }
@@ -627,12 +653,14 @@ public class LevelManager {
 
         for (GameObject object : objects) {
             if (object.isActive() && object instanceof RepairableObject repairable && isPlayerNear(object)) {
+                LOGGER.info("Player is trying to repair " + object.getClass().getSimpleName() + ".");
                 repairObject(repairable, object);
                 return;
             }
         }
 
         lastMessage = "No object nearby.";
+        LOGGER.info("Interaction failed: no object nearby.");
     }
 
     /**
@@ -643,10 +671,12 @@ public class LevelManager {
     private void unlockDoor(LockedDoor door) {
         if (!player.getInventory().containsItem(door.getRequiredModule())) {
             lastMessage = "Required module missing: " + door.getRequiredModule();
+            LOGGER.info("Door unlock failed. Missing module: " + door.getRequiredModule() + ".");
             return;
         }
 
         door.setActive(false);
+        LOGGER.info("Door unlocked with module: " + door.getRequiredModule() + ".");
 
         if (currentLevel == 1 && door.getRequiredModule().equals("Power Module")) {
             levelOneObjectiveCompleted = true;
@@ -687,10 +717,12 @@ public class LevelManager {
     private void switchLevel() {
         if (currentLevel == 1 && !levelOneObjectiveCompleted) {
             lastMessage = "Elevator locked. Complete Engineering Deck objective first.";
+            LOGGER.info("Elevator use denied because level 1 objective is not completed.");
             return;
         }
 
         if (currentLevel == 1) {
+            LOGGER.info("Switching from level 1 to level 2.");
             loadLevel(2);
         } else {
             lastMessage = "All objectives completed. Finish the station repair.";
@@ -708,11 +740,13 @@ public class LevelManager {
 
         if (repairable.isRepaired()) {
             lastMessage = objectName + " is already repaired.";
+            LOGGER.info("Repair skipped. " + objectName + " is already repaired.");
             return;
         }
 
         if (!player.getInventory().containsItem(repairable.getRequiredPart())) {
             lastMessage = "Missing part: " + repairable.getRequiredPart();
+            LOGGER.info("Repair failed for " + objectName + ". Missing part: " + repairable.getRequiredPart() + ".");
             return;
         }
 
@@ -722,13 +756,16 @@ public class LevelManager {
             if (currentLevel == 2 && object instanceof Generator) {
                 levelTwoObjectiveCompleted = true;
                 lastMessage = "Main generator repaired. Station fixed.";
+                LOGGER.info("Level 2 objective completed. Main generator repaired.");
                 return;
             }
 
             lastMessage = objectName + " repaired.";
+            LOGGER.info(objectName + " repaired successfully.");
         } else {
             lastMessage = "Repairing " + objectName + ": "
                     + repairable.getRepairProgress() + "%";
+            LOGGER.info("Repair progress for " + objectName + ": " + repairable.getRepairProgress() + "%.");
         }
     }
 
@@ -764,9 +801,10 @@ public class LevelManager {
             }
 
             lastMessage = "Inventory saved to " + fileName;
+            LOGGER.info("Inventory saved to " + fileName + ".");
         } catch (IOException e) {
             lastMessage = "Could not save inventory.";
-            System.err.println("Cannot save inventory: " + e.getMessage());
+            LOGGER.warning("Cannot save inventory: " + e.getMessage());
         }
     }
 
@@ -774,6 +812,8 @@ public class LevelManager {
      * Runs the crafting recipe according to the current level.
      */
     public void craftCurrentLevelRecipe() {
+        LOGGER.info("Crafting requested on level " + currentLevel + ".");
+
         if (currentLevel == 1) {
             craftItem("Wire", "Battery", "Power Module");
         } else if (currentLevel == 2) {
@@ -794,11 +834,13 @@ public class LevelManager {
 
         if (!hasFirstItem || !hasSecondItem) {
             lastMessage = "Missing parts for crafting: " + firstItem + " + " + secondItem;
+            LOGGER.info("Crafting failed. Missing parts for " + resultItem + ".");
             return;
         }
 
         if (player.getInventory().containsItem(resultItem)) {
             lastMessage = resultItem + " is already crafted.";
+            LOGGER.info("Crafting skipped. Item already exists: " + resultItem + ".");
             return;
         }
 
@@ -807,6 +849,7 @@ public class LevelManager {
         player.getInventory().addItem(new SparePart(0, 0, 0, 0, resultItem));
 
         lastMessage = "Crafted: " + resultItem;
+        LOGGER.info("Crafted item: " + resultItem + ".");
     }
 
     /**
@@ -817,12 +860,14 @@ public class LevelManager {
     private void openChest(Chest chest) {
         if (chest.isOpened()) {
             lastMessage = "Chest is empty.";
+            LOGGER.info("Chest interaction skipped because chest is already open.");
             return;
         }
 
         if (chest.getItemName().equals("Empty")) {
             chest.open();
             lastMessage = "Chest is empty.";
+            LOGGER.info("Opened empty chest.");
             return;
         }
 
@@ -831,6 +876,7 @@ public class LevelManager {
         chest.open();
 
         lastMessage = chest.getItemName() + " collected from chest.";
+        LOGGER.info("Chest item collected: " + chest.getItemName() + ".");
     }
 
     /**
@@ -852,6 +898,7 @@ public class LevelManager {
         File file = new File(fileName);
 
         if (!file.exists()) {
+            LOGGER.info("Inventory save file does not exist: " + fileName);
             return;
         }
 
@@ -870,9 +917,10 @@ public class LevelManager {
             }
 
             lastMessage = "Inventory loaded from " + fileName;
+            LOGGER.info("Inventory loaded from " + fileName + ".");
         } catch (IOException e) {
             lastMessage = "Could not load inventory.";
-            System.err.println("Cannot load inventory: " + e.getMessage());
+            LOGGER.warning("Cannot load inventory: " + e.getMessage());
         }
     }
 }

@@ -2,10 +2,12 @@ package cz.cvut.fel.pjv.spacemechanic.main;
 
 import cz.cvut.fel.pjv.spacemechanic.input.InputHandler;
 import cz.cvut.fel.pjv.spacemechanic.level.LevelManager;
+import cz.cvut.fel.pjv.spacemechanic.logger.LogConfig;
 import cz.cvut.fel.pjv.spacemechanic.ui.UIManager;
 
 import javax.swing.JFrame;
 import java.awt.Graphics;
+import java.util.logging.Logger;
 
 
 /**
@@ -13,6 +15,8 @@ import java.awt.Graphics;
  * Initializes the main game components and controls the current game state.
  */
 public class Game {
+
+    private static final Logger LOGGER = Logger.getLogger(Game.class.getName());
 
     private GameState currentState;
     private final GamePanel gamePanel;
@@ -24,16 +28,21 @@ public class Game {
      * Creates the basic game objects and connects the game logic with the UI.
      */
     public Game() {
+        LogConfig.configure();
+        LOGGER.info("Creating game components.");
         this.currentState = GameState.MENU;
         this.levelManager = new LevelManager();
         this.uiManager = new UIManager(this);
         this.inputHandler = new InputHandler(this);
         this.gamePanel = new GamePanel(this, inputHandler);
+        LOGGER.info("Game initialized in MENU state.");
     }
     /**
      * Creates the main game window and starts the game loop.
      */
     public void start() {
+        LOGGER.info("Starting game window.");
+
         JFrame frame = new JFrame("Space Mechanic");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
@@ -42,12 +51,7 @@ public class Game {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        gamePanel.startGameLoop();
-
-
-
-        frame.setVisible(true);
-
+        LOGGER.info("Game window is visible.");
         gamePanel.startGameLoop();
     }
 
@@ -84,6 +88,11 @@ public class Game {
      * @param newState new game state
      */
     public void changeState(GameState newState) {
+        if (this.currentState == newState) {
+            return;
+        }
+
+        LOGGER.info("Game state changed from " + this.currentState + " to " + newState + ".");
         this.currentState = newState;
     }
 

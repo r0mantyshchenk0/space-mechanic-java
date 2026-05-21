@@ -1,9 +1,13 @@
 package cz.cvut.fel.pjv.spacemechanic.model;
 
+import java.util.logging.Logger;
+
 import java.awt.Graphics;
 import java.util.Objects;
 
 public class Player extends Entity {
+
+    private static final Logger LOGGER = Logger.getLogger(Player.class.getName());
 
     private int health;
     private final Inventory inventory;
@@ -94,6 +98,7 @@ public class Player extends Entity {
 
     public void setHealth(int health) {
         this.health = health;
+        LOGGER.info("Player health set to " + health + ".");
     }
 
     public void setMovingUp(boolean movingUp) {

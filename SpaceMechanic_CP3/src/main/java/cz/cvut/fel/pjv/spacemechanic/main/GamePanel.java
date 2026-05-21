@@ -6,11 +6,14 @@ import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.util.logging.Logger;
 
 /**
  * Panel responsible for the game loop and rendering.
  */
 public class GamePanel extends JPanel implements Runnable {
+
+    private static final Logger LOGGER = Logger.getLogger(GamePanel.class.getName());
 
     private static final int WIDTH = 1280;
     private static final int HEIGHT = 720;
@@ -36,6 +39,8 @@ public class GamePanel extends JPanel implements Runnable {
         setOpaque(true);
         setFocusable(true);
         addKeyListener(inputHandler);
+
+        LOGGER.info("Game panel created with size " + WIDTH + "x" + HEIGHT + ".");
     }
 
     /**
@@ -44,8 +49,11 @@ public class GamePanel extends JPanel implements Runnable {
     public void startGameLoop() {
         if (gameThread == null) {
             running = true;
-            gameThread = new Thread(this);
+            gameThread = new Thread(this, "SpaceMechanicGameLoop");
             gameThread.start();
+            LOGGER.info("Game loop thread started.");
+        } else {
+            LOGGER.warning("Game loop was already running.");
         }
     }
 
@@ -55,6 +63,8 @@ public class GamePanel extends JPanel implements Runnable {
      */
     @Override
     public void run() {
+        LOGGER.info("Game loop is running.");
+
         final int fps = 60;
         final double drawInterval = 1_000_000_000.0 / fps;
         double delta = 0;

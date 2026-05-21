@@ -1,5 +1,7 @@
 package cz.cvut.fel.pjv.spacemechanic.model;
 
+import java.util.logging.Logger;
+
 import java.awt.Color;
 import java.awt.Graphics;
 /**
@@ -7,6 +9,8 @@ import java.awt.Graphics;
  * Stores the required part, repair state and repair progress.
  */
 public abstract class RepairableObject extends GameObject {
+
+    private static final Logger LOGGER = Logger.getLogger(RepairableObject.class.getName());
 
     // Part needed to repair this object
     protected String requiredPart;
